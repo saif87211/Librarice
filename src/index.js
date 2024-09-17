@@ -1,9 +1,21 @@
+import dotenv from "dotenv";
 import { app } from "./app.js";
+import dbConnect from "./db/db.js";
+
+dotenv.config("./.env");
 
 const port = process.env.PORT || 3000;
 
-app.get("/", (req, res) => {
-  res.send("Hello");
-});
-
-app.listen(port, () => console.log(`⚙ Server is running hot on port ${port}`));
+dbConnect()
+  .then(() => {
+    app.on("error", (error) => {
+      console.log("Error on App: ", error);
+      throw error;
+    });
+    app.listen(port, () =>
+      console.log(`⚙ Server is hot on port ${port}!!!`)
+    );
+  })
+  .catch((err) => {
+    console.log("Db Connecton Error: ", err);
+  });
