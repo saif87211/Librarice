@@ -1,0 +1,48 @@
+.split-background {
+    background: rgb(13, 110, 253);
+    background: linear-gradient(25deg, rgba(13, 110, 253, 1) 0%, rgba(9, 74, 170, 1) 50%, rgba(7, 57, 132, 1) 50%, rgba(3, 22, 51, 1) 100%) repeat fixed;
+}
+.min-vh-80{
+    min-height: 80vh;
+}
+.offcanvas {
+    transition: all 0.5s ease !important;
+    width: 19rem !important;
+}
+
+.fs-7 {
+    font-size: 0.88rem !important;
+}
+
+.hover-item:hover {
+    background: whitesmoke;
+    color: black;
+    transition: 0.3s ease;
+}
+
+.text-small {
+    font-size: 65%;
+}
+
+.icon {
+    width: 3rem;
+    height: 3rem;
+}
+
+.icon-shape {
+    display: inline-flex;
+    padding: 12px;
+    text-align: center;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+}
+
+.accordion-button:hover {
+    background-color: whitesmoke;
+    color: black;
+}
+
+.dashboard-menu {
+    padding: 1rem 1.25rem;
+}
