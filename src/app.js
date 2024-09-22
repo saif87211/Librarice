@@ -16,4 +16,11 @@ app.use(express.urlencoded({ extended: true, limit: "5kb" }));
 app.use(express.static("public"));
 app.use(cookieParser());
 
+app.set("view engine", "ejs");
+app.set("views", "./src/views");
+
+import mainRoute from "./routes/main.routes.js";
+
+app.use("/", mainRoute);
+
 export { app };
