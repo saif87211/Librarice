@@ -19,8 +19,8 @@ app.use(cookieParser());
 app.set("view engine", "ejs");
 app.set("views", "./src/views");
 
-import mainRoute from "./routes/main.routes.js";
+import userRoute from "./routes/user.routes.js";
 
-app.use("/", mainRoute);
+app.use("/", userRoute);
 
 export { app };
