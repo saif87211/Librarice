@@ -2,9 +2,11 @@
     background: rgb(13, 110, 253);
     background: linear-gradient(25deg, rgba(13, 110, 253, 1) 0%, rgba(9, 74, 170, 1) 50%, rgba(7, 57, 132, 1) 50%, rgba(3, 22, 51, 1) 100%) repeat fixed;
 }
-.min-vh-80{
+
+.min-vh-80 {
     min-height: 80vh;
 }
+
 .offcanvas {
     transition: all 0.5s ease !important;
     width: 19rem !important;
@@ -45,4 +47,13 @@
 
 .dashboard-menu {
     padding: 1rem 1.25rem;
+}
+
+#toggler {
+    display: none;
+    position: absolute;
+    right: 7%;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
 }

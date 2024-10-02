@@ -1,5 +1,6 @@
 $(
   $(document).ready(function () {
+    /* CHART JS */
     const weekChart = $("#weekchart");
     if (weekChart.length) {
       new Chart(weekChart, {
@@ -33,6 +34,8 @@ $(
         },
       });
     }
+
+    /* TABLE JS */
     createDataTable("#myTable");
     createDataTable("#list");
     createDataTable("#classTable");
@@ -71,6 +74,27 @@ $(
       } else {
         profileEditBtn[0].innerHTML = "Edit";
         $("#profileEditForm input, #updateProfile").prop("disabled", true);
+      }
+    });
+
+    const password = $("#password");
+
+    const toggler = $("#toggler");
+    password.on("change", function () {
+      toggler.toggle();
+    });
+
+    toggler.on("click", function () {
+      if (password.prop("type") === "password") {
+        $(this).removeClass("bi bi-eye-fill");
+        $(this).addClass("bi bi-eye-slash-fill");
+
+        password.attr("type", "text");
+      } else {
+        $(this).removeClass("bi bi-eye-slash-fill");
+        $(this).addClass("bi bi-eye-fill");
+
+        password.attr("type", "password");
       }
     });
   })
