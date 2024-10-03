@@ -16,11 +16,11 @@ const userLoginSchema = z.object({
 const validateRegisterUser = (userdata) => {
   const validation = userRegisterSchema.safeParse(userdata);
   console.log(validation);
-  return validation.success;
+  return validation;
 };
 const validateLoginUser = (logindata) => {
   const validation = userLoginSchema.safeParse(logindata);
-  return validation.success;
+  return validation;
 };
 
 export { validateRegisterUser, validateLoginUser };

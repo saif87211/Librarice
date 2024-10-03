@@ -5,7 +5,12 @@ import {
   validateRegisterUser,
   validateLoginUser,
 } from "../utils/validation.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
 
+const cookieOptions = {
+  httpOnly: true,
+  secure: true,
+};
 const generateToken = async (userId) => {
   try {
     const user = await User.findOne({ _id: userId });
@@ -27,18 +32,29 @@ const generateToken = async (userId) => {
 };
 
 const renderLogin = asyncHandler(async (req, res) => {
-  res.status(200).render("login", { message: "" });
+  return res.status(200).render("login");
 });
 
 const renderRegister = asyncHandler(async (req, res) => {
-  res.status(200).render("register", { message: "" });
+  return res.status(200).render("register");
 });
 
 const registerUser = asyncHandler(async (req, res) => {
   const { fullname, username, email, password, isAdmin } = req.body;
-
-  if (!validateRegisterUser({ fullname, username, email, password, isAdmin })) {
-    return res.status(400).render("register", { message: "Invalid fields" });
+  const zodValidation = validateRegisterUser({
+    fullname,
+    username,
+    email,
+    password,
+    isAdmin: false,
+  });
+  if (!zodValidation.success) {
+    return res.status(400).json(
+      new ApiResponse(400, {
+        title: "Invalid fields",
+        message: zodValidation.error.issues[0].message,
+      })
+    );
   }
 
   let isUserExisted = await User.findOne({
@@ -46,9 +62,12 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (isUserExisted) {
-    return res
-      .status(409)
-      .render("register", { message: "User already exist." });
+    return res.status(409).json(
+      new ApiResponse(409, {
+        title: "User already exist",
+        message: "user other email or username",
+      })
+    );
   }
 
   const user = await User.create({
@@ -60,42 +79,71 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (!user) {
-    return res.status(500).render("register", {
-      message: "Something went wrong while registering user!",
-    });
+    return res.status(500).json(
+      new ApiResponse(500, {
+        title: "Internal server error",
+        message: "Something went wrong while registering user!",
+      })
+    );
   }
 
-  return res
-    .status(200)
-    .render("register", { message: "You have registerd Successfully" });
+  return res.status(200).json(
+    new ApiResponse(200, {
+      title: "User Successfully register",
+      message: "Visit login page",
+    })
+  );
 });
 
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
-
-  if (!validateLoginUser({ email, password })) {
-    return res.status(400).render("login", { message: "Invalid fields" });
+  const zodValidation = validateLoginUser({ email, password });
+  if (!zodValidation.success) {
+    return res.status(400).json(
+      new ApiResponse(400, {
+        title: "Invlaid input",
+        message: zodValidation.error.issues[0].message,
+      })
+    );
   }
 
   const user = await User.findOne({ email });
 
   if (!user) {
-    return res.status(400).render("login", { message: "User does not exist" });
+    return res.status(400).json(
+      new ApiResponse(400, {
+        title: "Failed to login",
+        message: "User does not exist",
+      })
+    );
   }
 
   const isPasswordIsValid = await user.isPasswordCorrect(password);
 
   if (!isPasswordIsValid) {
-    return res.status(401).render("login", { message: "Password is Invalid" });
+    return res.status(401).json(
+      new ApiResponse(401, {
+        title: "Failed to login",
+        message: "Password is Invalid",
+      })
+    );
   }
 
   const token = await generateToken(user._id);
-  console.log(token);
+
   if (!token) {
-    return res.status(500).render("login", { message: "Something Went Wrong" });
+    return res.status(500).json(
+      new ApiResponse(500, {
+        title: "Interal server error",
+        message: "Something Went Wrong",
+      })
+    );
   }
 
-  return res.status(200).json({ token, message: "Login" });
+  return res
+    .status(200)
+    .cookie("token", token, cookieOptions)
+    .redirect("/dashboard");
 });
 
 export { renderLogin, renderRegister, registerUser, loginUser };
