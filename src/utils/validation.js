@@ -15,7 +15,6 @@ const userLoginSchema = z.object({
 
 const validateRegisterUser = (userdata) => {
   const validation = userRegisterSchema.safeParse(userdata);
-  console.log(validation);
   return validation;
 };
 const validateLoginUser = (logindata) => {

@@ -98,29 +98,10 @@ $(
       }
     });
 
-    $("#login-form").on("submit", function (e) {
-      e.preventDefault();
-      const submitBtn = $("#submit-btn");
-      submitBtn.prop("disabled", true);
-      submitBtn.html("<div class='loader'></div>");
+    //prevent re-submit on refresh
 
-      const formData = $(this).serialize();
-      const url = $(this).prop("action");
-      const method = $(this).prop("method");
-
-      fetch(url, {
-        method: method,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log(data);
-          submitBtn.prop("disabled", false);
-          submitBtn.html("Login");
-        });
-    });
+    if (window.history.replaceState) {
+      window.history.replaceState(null, null, window.location.href);
+    }
   })
 );

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   renderLogin,
+  redirectToLogin,
   renderRegister,
   registerUser,
   loginUser,
@@ -8,7 +9,9 @@ import {
 
 const router = Router();
 
-router.route("/").get(renderLogin);
+router.route("/").get(redirectToLogin);
+
+router.route("/login").get(renderLogin);
 
 router.route("/register").get(renderRegister);
 

@@ -31,12 +31,18 @@ const generateToken = async (userId) => {
   }
 };
 
-const renderLogin = asyncHandler(async (req, res) => {
-  return res.status(200).render("login");
+const renderRegister = asyncHandler(async (req, res) => {
+  const apiResponse = new ApiResponse(200, { alert: false });
+  return res.status(200).render("register", { apiResponse });
 });
 
-const renderRegister = asyncHandler(async (req, res) => {
-  return res.status(200).render("register");
+const redirectToLogin = asyncHandler(async (req, res) => {
+  return res.status(200).redirect("/login");
+});
+
+const renderLogin = asyncHandler(async (req, res) => {
+  const apiResponse = new ApiResponse(200, { alert: false });
+  return res.status(200).render("login", { apiResponse });
 });
 
 const registerUser = asyncHandler(async (req, res) => {
@@ -49,12 +55,12 @@ const registerUser = asyncHandler(async (req, res) => {
     isAdmin: false,
   });
   if (!zodValidation.success) {
-    return res.status(400).json(
-      new ApiResponse(400, {
-        title: "Invalid fields",
-        message: zodValidation.error.issues[0].message,
-      })
-    );
+    const apiResponse = new ApiResponse(400, {
+      alert: true,
+      title: "Invalid fields",
+      message: "Provide proper fields",
+    });
+    return res.status(400).render("register", { apiResponse });
   }
 
   let isUserExisted = await User.findOne({
@@ -62,12 +68,12 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (isUserExisted) {
-    return res.status(409).json(
-      new ApiResponse(409, {
-        title: "User already exist",
-        message: "user other email or username",
-      })
-    );
+    const apiResponse = new ApiResponse(409, {
+      alert: true,
+      title: "User already exist",
+      message: "user other email or username",
+    });
+    return res.status(409).render("register", { apiResponse });
   }
 
   const user = await User.create({
@@ -79,65 +85,65 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (!user) {
-    return res.status(500).json(
-      new ApiResponse(500, {
-        title: "Internal server error",
-        message: "Something went wrong while registering user!",
-      })
-    );
+    const apiResponse = new ApiResponse(500, {
+      alert: true,
+      title: "Internal server error",
+      message: "Something went wrong while registering user!",
+    });
+    return res.status(500).render("register", { apiResponse });
   }
 
-  return res.status(200).json(
-    new ApiResponse(200, {
-      title: "User Successfully register",
-      message: "Visit login page",
-    })
-  );
+  const apiResponse = new ApiResponse(200, {
+    alert: true,
+    title: "User Successfully register",
+    message: "Visit login page",
+  });
+  return res.status(200).render("register", { apiResponse });
 });
 
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   const zodValidation = validateLoginUser({ email, password });
   if (!zodValidation.success) {
-    return res.status(400).json(
-      new ApiResponse(400, {
-        title: "Invlaid input",
-        message: zodValidation.error.issues[0].message,
-      })
-    );
+    const apiResponse = new ApiResponse(400, {
+      alert: true,
+      title: "Invlaid input",
+      message: zodValidation.error.issues[0].message,
+    });
+    return res.status(400).render("login", { apiResponse });
   }
 
   const user = await User.findOne({ email });
 
   if (!user) {
-    return res.status(400).json(
-      new ApiResponse(400, {
-        title: "Failed to login",
-        message: "User does not exist",
-      })
-    );
+    const apiResponse = new ApiResponse(400, {
+      alert: true,
+      title: "Failed to login",
+      message: "User does not exist",
+    });
+    return res.status(400).render("login", { apiResponse });
   }
 
   const isPasswordIsValid = await user.isPasswordCorrect(password);
 
   if (!isPasswordIsValid) {
-    return res.status(401).json(
-      new ApiResponse(401, {
-        title: "Failed to login",
-        message: "Password is Invalid",
-      })
-    );
+    const apiResponse = new ApiResponse(401, {
+      alert: true,
+      title: "Failed to login",
+      message: "Password is Invalid",
+    });
+    return res.status(401).render("login", { apiResponse });
   }
 
   const token = await generateToken(user._id);
 
   if (!token) {
-    return res.status(500).json(
-      new ApiResponse(500, {
-        title: "Interal server error",
-        message: "Something Went Wrong",
-      })
-    );
+    const apiResponse = new ApiResponse(500, {
+      alert: true,
+      title: "Interal server error",
+      message: "Something Went Wrong",
+    });
+    return res.status(500).render("login", { apiResponse });
   }
 
   return res
@@ -146,4 +152,10 @@ const loginUser = asyncHandler(async (req, res) => {
     .redirect("/dashboard");
 });
 
-export { renderLogin, renderRegister, registerUser, loginUser };
+export {
+  renderLogin,
+  redirectToLogin,
+  renderRegister,
+  registerUser,
+  loginUser,
+};
