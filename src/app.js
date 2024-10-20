@@ -20,7 +20,10 @@ app.set("view engine", "ejs");
 app.set("views", "./src/views");
 
 import userRoute from "./routes/user.routes.js";
+import dashboardRoute from "./routes/dashboard.routes.js";
 
 app.use("/", userRoute);
+
+app.use("/dashboard", dashboardRoute);
 
 export { app };
