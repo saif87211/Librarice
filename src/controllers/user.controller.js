@@ -54,7 +54,7 @@ const registerUser = asyncHandler(async (req, res) => {
     password,
     isAdmin: false,
   });
-  if (!zodValidation.success) {
+  if (!zodValidation) {
     const apiResponse = new ApiResponse(400, {
       alert: true,
       title: "Invalid fields",
@@ -104,11 +104,11 @@ const registerUser = asyncHandler(async (req, res) => {
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   const zodValidation = validateLoginUser({ email, password });
-  if (!zodValidation.success) {
+  if (!zodValidation) {
     const apiResponse = new ApiResponse(400, {
       alert: true,
       title: "Invlaid input",
-      message: zodValidation.error.issues[0].message,
+      message: "Please enter valid data",
     });
     return res.status(400).render("login", { apiResponse });
   }
