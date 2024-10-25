@@ -21,6 +21,9 @@ const studentSchema = z.object({
   gender: z.ZodEnum(["Male", "Female"]),
 });
 
+const categorySchema = z.object({
+  categoryname: z.string(),
+});
 const validateRegisterUser = (userdata) => {
   const validation = userRegisterSchema.safeParse(userdata);
   console.log(validation);
@@ -38,4 +41,15 @@ const validateStudent = (studentdata) => {
   return validation.success;
 };
 
-export { validateRegisterUser, validateLoginUser, validateStudent };
+const validateBookCategory = (BookCateogryData) => {
+  const validation = categorySchema.safeParse(BookCateogryData);
+  console.log(validation);
+  return validation.success;
+};
+
+export {
+  validateRegisterUser,
+  validateLoginUser,
+  validateStudent,
+  validateBookCategory,
+};
