@@ -13,7 +13,7 @@ const renderStudentPage = asyncHandler(async (req, res) => {
   return res.status(200).render("student", apiResponse);
 });
 
-const CreateOrUpdateStudent = asyncHandler(async (req, res) => {
+const createOrUpdateStudent = asyncHandler(async (req, res) => {
   const { stuId, name, rollno, medium, section, gender } = req.body;
 
   const zodValidation = validateStudent({
@@ -82,4 +82,4 @@ const deleteStudent = asyncHandler(async (req, res) => {
   return res.status(200).render("student", { apiResponse });
 });
 
-export { renderStudentPage, CreateOrUpdateStudent, deleteStudent };
+export { renderStudentPage, createOrUpdateStudent, deleteStudent };

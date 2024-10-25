@@ -12,7 +12,7 @@ const renderSection = asyncHandler(async (req, res) => {
   return res.status(200).render("section", { apiResponse });
 });
 
-const addOrUpdateSection = asyncHandler(async (req, res) => {
+const createOrUpdateSection = asyncHandler(async (req, res) => {
   const { sectionId, section } = req.body;
   if (!section) {
     const apiResponse = new ApiResponse(400, {
@@ -51,4 +51,4 @@ const deleteSection = asyncHandler(async (req, res) => {
   return res.status(200).render("section", { apiResponse });
 });
 
-export { renderSection, addOrUpdateSection, deleteSection };
+export { renderSection, createOrUpdateSection, deleteSection };
