@@ -4,7 +4,7 @@ import {
   renderSection,
   createOrUpdateSection,
   deleteSection,
-} from "../controllers/section.controllers.js";
+} from "../controllers/section.controller.js";
 
 const router = Router();
 
