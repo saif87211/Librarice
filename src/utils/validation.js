@@ -16,9 +16,9 @@ const userLoginSchema = z.object({
 const studentSchema = z.object({
   name: z.string(),
   rollno: z.number(),
-  medium: z.ZodEnum(["English", "Gujarati"]),
+  medium: new z.ZodEnum(["English", "Gujarati"]),
   section: z.string(),
-  gender: z.ZodEnum(["Male", "Female"]),
+  gender: new z.ZodEnum(["Male", "Female"]),
 });
 
 const categorySchema = z.object({
@@ -26,24 +26,20 @@ const categorySchema = z.object({
 });
 const validateRegisterUser = (userdata) => {
   const validation = userRegisterSchema.safeParse(userdata);
-  console.log(validation);
   return validation.success;
 };
 const validateLoginUser = (logindata) => {
   const validation = userLoginSchema.safeParse(logindata);
-  console.log(validation);
   return validation.success;
 };
 
 const validateStudent = (studentdata) => {
   const validation = studentSchema.safeParse(studentdata);
-  console.log(validation);
   return validation.success;
 };
 
 const validateBookCategory = (BookCateogryData) => {
-  const validation = categorySchema.safeParse(BookCateogryData);
-  console.log(validation);
+  const validation = categorySchema.safeParse(BookCateogryData);  
   return validation.success;
 };
 

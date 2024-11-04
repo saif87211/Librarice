@@ -13,7 +13,7 @@ dbConnect()
       throw error;
     });
     app.listen(port, () =>
-      console.log(`⚙ Server is hot on port ${port}!!!`)
+      console.log(`⚙ Server is hot on http://localhost:${port}`)
     );
   })
   .catch((err) => {
