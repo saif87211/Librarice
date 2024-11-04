@@ -9,8 +9,7 @@ const renderStudentPage = asyncHandler(async (req, res) => {
   if (!students) {
     students = [];
   }
-  const apiResponse = new ApiResponse(200, { students });
-  return res.status(200).render("student", apiResponse);
+  return res.status(200).render("student", { apiResponse: new ApiResponse(200, { students }) });
 });
 
 const createOrUpdateStudent = asyncHandler(async (req, res) => {
@@ -25,23 +24,25 @@ const createOrUpdateStudent = asyncHandler(async (req, res) => {
   });
 
   if (!zodValidation) {
-    const apiResponse = new ApiResponse(400, {
-      alert: true,
-      title: "Invlaid input",
-      message: "Please enter valid data",
+    return res.status(400).render("student", {
+      apiResponse: new ApiResponse(400, {
+        alert: true,
+        title: "Invlaid input",
+        message: "Please enter valid data",
+      })
     });
-    return res.status(400).render("student", { apiResponse });
   }
 
-  const newSection = await Section.findOne({ name: seciton });
+  const newSection = await Section.findOne({ name: section });
 
   if (!newSection) {
-    const apiResponse = new ApiResponse(400, {
-      alert: true,
-      title: "Invlaid input",
-      message: "Please enter valid data",
+    return res.status(400).render("student", {
+      apiResponse: new ApiResponse(400, {
+        alert: true,
+        title: "Invlaid input",
+        message: "Please enter valid data",
+      })
     });
-    return res.status(400).render("student", { apiResponse });
   }
   if (stuId) {
     await Student.findByIdAndUpdate(stuId, {
@@ -60,14 +61,16 @@ const createOrUpdateStudent = asyncHandler(async (req, res) => {
       gender,
     });
   }
-  const apiResponse = new ApiResponse(200, {
-    alert: true,
-    title: stuId
-      ? "Studnet updated successfully"
-      : "Student added successfully",
-    message: "",
+
+  return res.status(200).render("student", {
+    apiResponse: new ApiResponse(200, {
+      alert: true,
+      title: stuId
+        ? "Studnet updated successfully"
+        : "Student added successfully",
+      message: "",
+    })
   });
-  return res.status(200).render("student", { apiResponse });
 });
 
 const deleteStudent = asyncHandler(async (req, res) => {
@@ -75,11 +78,12 @@ const deleteStudent = asyncHandler(async (req, res) => {
 
   await Student.findById(_id).deleteOne();
 
-  const apiResponse = new ApiResponse(200, {
-    alert: true,
-    title: "Entry was deleted Succesfully",
+  return res.status(200).render("student", {
+    apiResponse: new ApiResponse(200, {
+      alert: true,
+      title: "Entry was deleted Succesfully",
+    })
   });
-  return res.status(200).render("student", { apiResponse });
 });
 
 export { renderStudentPage, createOrUpdateStudent, deleteStudent };

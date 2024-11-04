@@ -32,8 +32,7 @@ const generateToken = async (userId) => {
 };
 
 const renderRegister = asyncHandler(async (req, res) => {
-  const apiResponse = new ApiResponse(200, { alert: false });
-  return res.status(200).render("register", { apiResponse });
+  return res.status(200).render("register", { apiResponse: new ApiResponse(200, { alert: false }) });
 });
 
 const redirectToLogin = asyncHandler(async (req, res) => {
@@ -41,8 +40,7 @@ const redirectToLogin = asyncHandler(async (req, res) => {
 });
 
 const renderLogin = asyncHandler(async (req, res) => {
-  const apiResponse = new ApiResponse(200, { alert: false });
-  return res.status(200).render("login", { apiResponse });
+  return res.status(200).render("login", { apiResponse: new ApiResponse(200, { alert: false }) });
 });
 
 const registerUser = asyncHandler(async (req, res) => {
@@ -54,13 +52,15 @@ const registerUser = asyncHandler(async (req, res) => {
     password,
     isAdmin: false,
   });
+
   if (!zodValidation) {
-    const apiResponse = new ApiResponse(400, {
-      alert: true,
-      title: "Invalid fields",
-      message: "Provide proper fields",
+    return res.status(400).render("register", {
+      apiResponse: new ApiResponse(400, {
+        alert: true,
+        title: "Invalid fields",
+        message: "Provide proper fields",
+      })
     });
-    return res.status(400).render("register", { apiResponse });
   }
 
   let isUserExisted = await User.findOne({
@@ -68,12 +68,13 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (isUserExisted) {
-    const apiResponse = new ApiResponse(409, {
-      alert: true,
-      title: "User already exist",
-      message: "user other email or username",
+    return res.status(409).render("register", {
+      apiResponse: new ApiResponse(409, {
+        alert: true,
+        title: "User already exist",
+        message: "user other email or username",
+      })
     });
-    return res.status(409).render("register", { apiResponse });
   }
 
   const user = await User.create({
@@ -85,65 +86,72 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (!user) {
-    const apiResponse = new ApiResponse(500, {
-      alert: true,
-      title: "Internal server error",
-      message: "Something went wrong while registering user!",
+    return res.status(500).render("register", {
+      apiResponse: new ApiResponse(500, {
+        alert: true,
+        title: "Internal server error",
+        message: "Something went wrong while registering user!",
+      })
     });
-    return res.status(500).render("register", { apiResponse });
   }
 
-  const apiResponse = new ApiResponse(200, {
-    alert: true,
-    title: "User Successfully register",
-    message: "Visit login page",
+  return res.status(200).render("register", {
+    apiResponse: new ApiResponse(200, {
+      alert: true,
+      title: "User Successfully register",
+      message: "Visit login page",
+    })
   });
-  return res.status(200).render("register", { apiResponse });
 });
 
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   const zodValidation = validateLoginUser({ email, password });
+
   if (!zodValidation) {
-    const apiResponse = new ApiResponse(400, {
-      alert: true,
-      title: "Invlaid input",
-      message: "Please enter valid data",
+    return res.status(400).render("login", {
+      apiResponse: new ApiResponse(400, {
+        alert: true,
+        title: "Invlaid input",
+        message: "Please enter valid data",
+      })
     });
-    return res.status(400).render("login", { apiResponse });
   }
 
   const user = await User.findOne({ email });
 
   if (!user) {
-    const apiResponse = new ApiResponse(400, {
-      alert: true,
-      title: "Failed to login",
-      message: "User does not exist",
+    return res.status(400).render("login", {
+      apiResponse: new ApiResponse(400, {
+        alert: true,
+        title: "Failed to login",
+        message: "User does not exist",
+      })
     });
-    return res.status(400).render("login", { apiResponse });
   }
 
   const isPasswordIsValid = await user.isPasswordCorrect(password);
 
   if (!isPasswordIsValid) {
-    const apiResponse = new ApiResponse(401, {
-      alert: true,
-      title: "Failed to login",
-      message: "Password is Invalid",
+    return res.status(401).render("login", {
+      apiResponse: new ApiResponse(401, {
+        alert: true,
+        title: "Failed to login",
+        message: "Password is Invalid",
+      })
     });
-    return res.status(401).render("login", { apiResponse });
   }
 
   const token = await generateToken(user._id);
 
   if (!token) {
-    const apiResponse = new ApiResponse(500, {
-      alert: true,
-      title: "Interal server error",
-      message: "Something Went Wrong",
+    return res.status(500).render("login", {
+      apiResponse: new ApiResponse(500, {
+        alert: true,
+        title: "Interal server error",
+        message: "Something Went Wrong",
+      })
     });
-    return res.status(500).render("login", { apiResponse });
   }
 
   return res
