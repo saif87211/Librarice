@@ -1,0 +1,50 @@
+<!-- HEADER STARTS -->
+<header
+  class="navbar sticky-top bg-body-tertiary fixed-top border-bottom shadow-sm py-1"
+>
+  <div class="container-fluid">
+    <div class="d-flex align-content-center">
+      <a
+        class="btn border-0 navbar-toggler fs-6"
+        type="button"
+        data-bs-toggle="offcanvas"
+        data-bs-target="#sidebar"
+        aria-controls="sidebar"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </a>
+      <span class="fw-bold fs-6 pt-1">Section</span>
+    </div>
+    <div class="navbar-brand">
+      <div class="dropdown">
+        <a
+          href="#"
+          class="d-block link-body-emphasis text-decoration-none dropdown-toggle"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <img
+            src="https://github.com/mdo.png"
+            alt="mdo"
+            width="32"
+            height="32"
+            class="rounded-circle"
+          />
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end shadow">
+          <li><a class="dropdown-item" href="#">Settings</a></li>
+          <li><a class="dropdown-item" href="#">Profile</a></li>
+          <li><a class="dropdown-item" href="#">Change Password</a></li>
+          <li>
+            <hr class="dropdown-divider" />
+          </li>
+          <li><a class="dropdown-item" href="#">Sign out</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <%-include("sidebar")%>
+  </div>
+</header>
+<!-- HEADER ENDS -->

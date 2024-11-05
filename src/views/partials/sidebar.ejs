@@ -1,0 +1,130 @@
+<!-- SIDEBAR START -->
+<nav
+  class="offcanvas offcanvas-start"
+  tabindex="-1"
+  id="sidebar"
+  aria-labelledby="sidebarcanvas"
+>
+  <!-- SIDEBAR HEADER START -->
+  <div class="offcanvas-header border-bottom py-2 border-1">
+    <h5 class="offcanvas-title" id="sidebarcanvas">
+      <span class="bi bi-book"></span>
+      <span>Library</span>
+    </h5>
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="offcanvas"
+      aria-label="Close"
+    ></button>
+  </div>
+  <!-- SIDEBAR HEADER END -->
+  <!-- SIDEBAR BODY START -->
+  <div class="offcanvas-body p-0">
+    <div id="usermenu" class="accordion accordion-flush my-2">
+      <!-- DASHBOARD -->
+      <a
+        href="#"
+        class="dashboard-menu hover-item d-flex align-items-center justify-content-between border-top border-bottom mt-1 mb-3 link-body-emphasis text-decoration-none"
+      >
+        <div class="fw-bold">
+          <i class="bi bi-display"></i>
+          <span>Dashboard</span>
+        </div>
+        <i class="bi bi-chevron-right fs-5"></i>
+      </a>
+      <!-- USER -->
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button
+            class="accordion-button collapsed fw-bold shadow-none"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#usercollapse"
+            aria-expanded="false"
+            aria-controls="usercollapse"
+          >
+            <i class="bi bi-person"></i>
+            <span class="ps-1">Users</span>
+          </button>
+        </h2>
+
+        <div
+          id="usercollapse"
+          class="accordion-collapse collapse"
+          data-bs-parent="#usermenu"
+        >
+          <div class="accordion-body p-0">
+            <div class="list-group fs-7">
+              <a href="#" class="list-group-item hover-item">Insert User</a>
+              <a href="#" class="list-group-item hover-item">Update User</a>
+              <a href="#" class="list-group-item hover-item">Delete User</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- BOOKS -->
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button
+            class="accordion-button collapsed fw-bold shadow-none"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#bookcollapse"
+            aria-expanded="false"
+            aria-controls="bookcollapse"
+          >
+            <i class="bi bi-book"></i>
+            <span class="ps-1">Book</span>
+          </button>
+        </h2>
+
+        <div
+          id="bookcollapse"
+          class="accordion-collapse collapse"
+          data-bs-parent="#usermenu"
+        >
+          <div class="accordion-body p-0">
+            <div class="list-group fs-7">
+              <a href="#" class="list-group-item hover-item">Insert Book</a>
+              <a href="#" class="list-group-item hover-item">Update Book</a>
+              <a href="#" class="list-group-item hover-item">Delete Book</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- STUDETS -->
+      <div class="accordion-item border-bottom">
+        <h2 class="accordion-header">
+          <button
+            class="accordion-button collapsed fw-bold shadow-none"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#studentcollapse"
+            aria-expanded="false"
+            aria-controls="studentcollapse"
+          >
+            <i class="bi bi-person-vcard"></i>
+            <span class="ps-1">Students</span>
+          </button>
+        </h2>
+
+        <div
+          id="studentcollapse"
+          class="accordion-collapse collapse"
+          data-bs-parent="#usermenu"
+        >
+          <div class="accordion-body p-0">
+            <div class="list-group fs-7">
+              <a href="#" class="list-group-item hover-item">Insert Student</a>
+              <a href="#" class="list-group-item hover-item">Update Student</a>
+              <a href="#" class="list-group-item hover-item">Delete Student</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- SIDEBAR BODY END -->
+</nav>
+<!-- SIDEBAR END -->
