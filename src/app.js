@@ -21,9 +21,10 @@ app.set("views", "./src/views");
 
 import userRoute from "./routes/user.routes.js";
 import dashboardRoute from "./routes/dashboard.routes.js";
+import sectionRoute from "./routes/section.routes.js";
 
 app.use("/", userRoute);
 
 app.use("/dashboard", dashboardRoute);
-
+app.use("/", sectionRoute);
 export { app };

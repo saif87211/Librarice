@@ -21,29 +21,40 @@
       href="https://cdn.datatables.net/v/dt/dt-2.1.5/b-3.1.2/b-html5-3.1.2/b-print-3.1.2/r-3.0.3/sb-1.8.0/sp-2.3.2/sl-2.0.5/datatables.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="../style.css" />
   </head>
   <body>
-    <%-include("partials/header")%>
+    <%-include("../partials/header")%>
+
     <!-- MAIN BODY STARTS -->
     <main class="split-background">
-      <div class="container">
+      <div class="container min-vh-80">
         <div class="row justify-content-center">
-          <div class="col-lg-10">
+          <div class="col-lg-9">
             <div class="card bg-white rounded-0 shadow my-4">
-              <h5 class="card-header py-3">Add Section</h5>
+              <h5 class="card-header py-3">Edit Section</h5>
               <div class="card-body bg-secondary-subtle p-4">
-                <form class="needs-validation" novalidate>
+                <% const {section} = apiResponse.data  %>
+                <!-- FORM -->
+                <form
+                  id="editSection"
+                  method="post"
+                  action="/section/"
+                  class="needs-validation"
+                  novalidate
+                >
                   <div class="row g-3">
                     <div class="col-md">
                       <!-- STUDENT NAME FIELD -->
                       <div class="form-floating mb-3">
+                        <input type="hidden" name="sectionId" value="<%=section._id%>">
                         <input
                           id="section"
                           name="section"
                           class="form-control rounded-0 shadow shadow"
                           type="text"
                           placeholder="Section Name"
+                          value="<%=section.name%>"
                           required
                         />
                         <label for="stuname">Section Name</label>
@@ -56,53 +67,10 @@
                   <!-- SUBMIT BUTTON -->
                   <div class="d-grid gap-2 mt-3">
                     <button class="btn btn-primary rounded-0" type="submit">
-                      Add Section
+                      Update Section
                     </button>
                   </div>
                 </form>
-              </div>
-            </div>
-          </div>
-          <div class="row justify-content-center">
-            <div class="col">
-              <div class="card bg-white rounded-0 shadow my-4">
-                <h5 class="card-header py-3">Classes</h5>
-                <div class="card-body p-4">
-                  <table
-                    id="classTable"
-                    class="table table-primary table-bordered"
-                  >
-                    <thead>
-                      <tr>
-                        <th scope="col">Sr No.</th>
-                        <th scope="col">Sections</th>
-                        <th scope="col">Edit or Delete</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr id="6729e6f311b2b1c456acc316" class="select">
-                        <th>1</th>
-                        <td>John Soap Mactewish</td>
-                        <td>
-                          <button
-                            type="button"
-                            class="btn btn-sm btn-primary rounded-circle"
-                            onclick="openForm('6729e6f311b2b1c456acc316')"
-                          >
-                            <i class="bi bi-pencil"></i>
-                          </button>
-                          <button
-                            type="button"
-                            class="btn btn-sm btn-danger rounded-circle"
-                            onclick="deleteField(2,'student')"
-                          >
-                            <i class="bi bi-trash"></i>
-                          </button>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
               </div>
             </div>
           </div>
@@ -110,7 +78,25 @@
       </div>
     </main>
     <!-- MAIN BODY ENDS -->
-    <%-include("partials/footer")%>
+
+    <%-include("../partials/footer")%>
+
+    <% const {data} = apiResponse; %>
+    <% if(data.alert){%>
+      <template id="alert-template">
+        <swal-title><%=data.title%></swal-title>
+        <swal-html><p><%=data.message%></p></swal-html>
+        <swal-icon type="<%=(apiResponse.success)?'success':'error'%>"></swal-icon>
+        <swal-button type="confirm">Okay</swal-button>
+      </template>
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            Swal.fire({
+                template: "#alert-template"
+            });
+        </script>
+        <!--- SWEET ALERT --->
+      <%}%>
     <!-- POPPER JS SCRIPT -->
     <script
       src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
@@ -134,16 +120,5 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="https://cdn.datatables.net/v/dt/dt-2.1.5/b-3.1.2/b-html5-3.1.2/b-print-3.1.2/r-3.0.3/sb-1.8.0/sp-2.3.2/sl-2.0.5/datatables.min.js"></script>
     <script src="./script.js"></script>
-    <script>
-      function openForm(id) {
-        const rowContent = $(`#${id} > td`);
-        rowContent.each((index, element) => {
-          console.log(element.textContent);
-        });
-      }
-      function deleteField(id, field, obj) {
-        alert("Delete");
-      }
-    </script>
   </body>
 </html>
