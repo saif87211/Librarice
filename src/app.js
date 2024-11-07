@@ -23,11 +23,13 @@ import userRoute from "./routes/user.routes.js";
 import dashboardRoute from "./routes/dashboard.routes.js";
 import sectionRoute from "./routes/section.routes.js";
 import studentRoute from "./routes/student.routes.js";
+import bookCategoryRoute from "./routes/bookcategory.routes.js"
 
 app.use("/", userRoute);
 
 app.use("/dashboard", dashboardRoute);
 app.use("/", sectionRoute);
 app.use("/", studentRoute);
+app.use("/", bookCategoryRoute);
 
 export { app };

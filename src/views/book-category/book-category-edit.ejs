@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Book Category</title>
+    <%-include("../partials/styles")%>
+  </head>
+  <body>
+    <%-include("../partials/header")%>
+
+    <!-- MAIN BODY STARTS -->
+    <main class="split-background">
+      <div class="container min-vh-80">
+        <div class="row justify-content-center">
+          <div class="col-lg-9">
+            <div class="card bg-white rounded-0 shadow my-4">
+              <h5 class="card-header py-3">Edit Book Category</h5>
+              <div class="card-body bg-secondary-subtle p-4">
+                <% const {bookCategory} = apiResponse.data  %>
+                <!-- FORM -->
+                <form
+                  id="editBookCategory"
+                  method="post"
+                  action="/book-category"
+                  class="needs-validation"
+                  novalidate
+                >
+                  <div class="row g-3">
+                    <div class="col-md">
+                      <!-- STUDENT NAME FIELD -->
+                      <div class="form-floating mb-3">
+                        <input type="hidden" name="id" value="<%=bookCategory._id%>">
+                        <input
+                          id="category"
+                          name="categoryname"
+                          class="form-control rounded-0 shadow shadow"
+                          type="text"
+                          placeholder="Book Category"
+                          value="<%=bookCategory.categoryname%>"
+                          required
+                        />
+                        <label for="stuname">Book Category</label>
+                        <div class="invalid-feedback">
+                          Book Category is required
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- SUBMIT BUTTON -->
+                  <div class="d-grid gap-2 mt-3">
+                    <button class="btn btn-primary rounded-0" type="submit">
+                      Edit Book Category
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <!-- MAIN BODY ENDS -->
+
+    <%-include("../partials/footer")%>
+
+    <% const {data} = apiResponse; %>
+    <% if(data.alert){%>
+      <template id="alert-template">
+        <swal-title><%=data.title%></swal-title>
+        <swal-html><p><%=data.message%></p></swal-html>
+        <swal-icon type="<%=(apiResponse.success)?'success':'error'%>"></swal-icon>
+        <swal-button type="confirm">Okay</swal-button>
+      </template>
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            Swal.fire({
+                template: "#alert-template"
+            });
+        </script>
+        <!--- SWEET ALERT --->
+      <%}%>
+      <%-include("../partials/scripts")%>
+  </body>
+</html>

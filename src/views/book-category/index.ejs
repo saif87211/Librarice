@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Book Category</title>
+    <%-include("../partials/styles")%>
+  </head>
+  <body>
+    <%-include("../partials/header")%>
+
+    <!-- MAIN BODY STARTS -->
+    <main class="split-background">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-10">
+            <div class="card bg-white rounded-0 shadow my-4">
+              <h5 class="card-header py-3">Add book category</h5>
+              <div class="card-body bg-secondary-subtle p-4">
+                <!-- FORM -->
+                <form
+                  id="book-category"
+                  method="post"
+                  action="/book-category"
+                  class="needs-validation"
+                  novalidate
+                >
+                  <div class="row g-3">
+                    <div class="col-md">
+                      <!-- CATEGORY NAME FIELD -->
+                      <div class="form-floating mb-3">
+                        <input
+                          id="category"
+                          name="categoryname"
+                          class="form-control rounded-0 shadow shadow"
+                          type="text"
+                          placeholder="Category Name"
+                          required
+                        />
+                        <label for="category">Book Category Name</label>
+                        <div class="invalid-feedback">
+                          Category name is required
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- SUBMIT BUTTON -->
+                  <div class="d-grid gap-2 mt-3">
+                    <button class="btn btn-primary rounded-0" type="submit">
+                      Add book category
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+          <!-- TABLE -->
+          <div class="row justify-content-center">
+            <div class="col">
+              <div class="card bg-white rounded-0 shadow my-4">
+                <h5 class="card-header py-3">Books Category</h5>
+                <div class="card-body p-4">
+                  <table
+                    id="classTable"
+                    class="table table-bordered table-hover table-striped"
+                    >
+                    <thead>
+                      <tr>
+                        <th scope="col">Sr No.</th>
+                        <th scope="col">Books Category</th>
+                        <th scope="col">Edit or Delete</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% const { bookCategories } = apiResponse.data; %>
+                      <% for(let i = 0; i < bookCategories.length; i++){%>
+                        <tr id="" class="">
+                          <th><%=i+1%>.</th>
+                          <td><%=bookCategories[i].categoryname%></td>
+                          <td class="d-flex column-gap-1">
+                            <form method="post" action="/book-category-edit">
+                              <input type="hidden" name="id" value="<%=bookCategories[i]._id%>">
+                              <button
+                                type="submit"
+                                class="btn btn-sm btn-primary rounded-circle"
+                              >
+                                <i class="bi bi-pencil"></i>
+                              </button>
+                            </form>
+                            <form class="delete-form" method="post" action="/book-category-delete">
+                              <input type="hidden" name="id" value="<%=bookCategories[i]._id%>">
+                              <button
+                                type="submit"
+                                class="btn btn-sm btn-danger rounded-circle"                                
+                                >
+                                <i class="bi bi-trash"></i>
+                              </button>
+                          </form>
+                          </td>
+                        </tr>  
+                      <%} %>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <!-- MAIN BODY ENDS -->
+
+    <%-include("../partials/footer")%>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <% const {data} = apiResponse; %>
+    <% if(data.alert){%>
+      <template id="alert-template">
+        <swal-title><%=data.title%></swal-title>
+        <swal-html><p><%=data.message%></p></swal-html>
+        <swal-icon type="<%=(apiResponse.success)?'success':'error'%>"></swal-icon>
+        <swal-button type="confirm">Okay</swal-button>
+      </template>
+        <script>
+            Swal.fire({
+                template: "#alert-template"
+            });
+        </script>
+    <%}%>
+
+    <%-include("../partials/scripts")%>
+    <script>
+      $(".delete-form").on("submit", async function (e) {
+        e.preventDefault();
+        const result = await Swal.fire({
+          title: "Are sure you want to delete this entry?",
+          icon:"warning",
+          showCancelButton:true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+        });
+        if(result.isConfirmed) 
+          this.submit();
+        else 
+          e.preventDefault();
+      });
+    </script>
+  </body>
+</html>
