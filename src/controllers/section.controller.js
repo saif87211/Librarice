@@ -16,7 +16,7 @@ const renderSection = asyncHandler(async (req, res) => {
 });
 
 const renderSectionEdit = asyncHandler(async (req, res) => {
-  const { id } = req.body;
+  const id = req.body.id;
 
   if (!id) {
     const sections = await Section.find();
@@ -28,7 +28,6 @@ const renderSectionEdit = asyncHandler(async (req, res) => {
           title: "Something went wrong",
           message: "Try again after sometime",
           sections,
-          delete: req.method === "DELETE"
         })
       });
   }
@@ -93,7 +92,7 @@ const deleteSection = asyncHandler(async (req, res) => {
   return res.status(200).render("section", {
     apiResponse: new ApiResponse(200, {
       alert: true,
-      title: "Entry was deleted Succesfully",
+      title: "Section was deleted Succesfully",
       sections
     })
   });
