@@ -10,7 +10,7 @@ const studentSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    meidum: {
+    medium: {
       type: String,
       enum: ["English", "Gujarati"],
       required: true,

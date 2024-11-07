@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student</title>
+    <%-include("../partials/styles")%>
+  </head>
+  <body>
+    <%-include("../partials/header")%>
+    <%const {sections, student} = apiResponse.data %>
+    <!-- MAIN BODY STARTS -->
+    <main class="split-background">
+      <div class="container min-vh-80">
+        <div class="row justify-content-center">
+          <!-- STUDENT FORM -->
+          <div class="col-lg-10">
+            <div class="card bg-white rounded-0 shadow my-4">
+              <h5 class="card-header py-3">Edit Student</h5>
+              <div class="card-body bg-secondary-subtle p-4">
+                <form
+                  method="post"
+                  action="/student"
+                  class="needs-validation"
+                  novalidate
+                >
+                  <div class="row g-3">
+                    <div class="col-md">
+                      <!-- STUDENT NAME FIELD -->
+                      <div class="form-floating mb-3">
+                        <input type="hidden" name="id" value="<%=student._id%>" >
+                        <input
+                          id="stuname"
+                          name="name"
+                          class="form-control rounded-0 shadow shadow"
+                          type="text"
+                          placeholder="Student Name"
+                          value="<%=student.name%>"
+                          required
+                        />
+                        <label for="stuname">Student Name</label>
+                        <div class="invalid-feedback">
+                          Student name is required.
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <!-- ROLL NO. FIELD -->
+                      <div class="form-floating mb-3">
+                        <input
+                          id="rollno"
+                          name="rollno"
+                          class="form-control rounded-0 shadow"
+                          type="number"
+                          placeholder="Roll no."
+                          value="<%=student.rollno%>"
+                          required
+                        />
+                        <label for="rollno">Roll No.</label>
+                        <div class="invalid-feedback">
+                          Roll no. is required.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row g-3">
+                    <div class="col-md">
+                      <!-- SECTION FIELD -->
+                      <div class="form-floating mb-3">
+                        <select
+                          id="medium"
+                          class="form-select rounded-0 shadow"
+                          name="section"
+                          required
+                        >
+                          <option disabled value="">
+                            Open this select section
+                          </option>
+                          <% for(let i = 0; i < sections.length; i++){%>
+                          <option <%= student.section.name === sections[i].name ? "selected" : ""  %> value="<%=sections[i].name%>" ><%=sections[i].name%></option>
+                            <%}%>
+                        </select>
+                        <div class="invalid-feedback">
+                          Please select a section.
+                        </div>
+                        <label for="class">Class</label>
+                      </div>
+                    </div>
+                    <div class="col-md">
+                      <!-- MEDIUM FIELD -->
+                      <div class="form-floating mb-3">
+                        <select
+                          id="class"
+                          class="form-select rounded-0 shadow"
+                          name="medium"
+                          required
+                        >
+                            Open this select menu
+                          </option>
+                          <option <%= (student.medium === "English") ? "selected" : ""  %> value="English" >English</option>
+                          <option <%= (student.medium === "Gujarati") ? "selected" : ""  %> value="Gujarati">Gujarati</option>
+                        </select>
+                        <div class="invalid-feedback">
+                          Please select a Medium.
+                        </div>
+                        <label for="class">Medium</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row g-3">
+                    <div class="col-md">
+                      <!-- GENDER FIELD -->
+                      <div class="form-check form-check-inline my-3">
+                        <input
+                          id="male"
+                          class="form-check-input"
+                          type="radio"
+                          name="gender"
+                          value="Male"
+                          <%= student.gender === "Male" ? "checked" : ""  %>
+                          required
+                        />
+                        <label class="form-check-label" for="male">Male</label>
+                      </div>
+                      <div class="form-check form-check-inline my-3">
+                        <input
+                          id="female"
+                          class="form-check-input"
+                          type="radio"
+                          name="gender"
+                          value="Female"
+                          <%= student.gender === "Female" ? "checked" : ""  %>
+                          required
+                        />
+                        <label class="form-check-label" for="female"
+                          >Female</label
+                        >
+                      </div>
+                    </div>
+                  </div>
+                  <!-- SUBMIT BUTTON -->
+                  <div class="d-grid gap-2 mt-3">
+                    <button class="btn btn-primary rounded-0" type="submit">
+                      Edit Student
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <!-- MAIN BODY ENDS -->
+    <%-include("../partials/footer")%>
+
+    <!-- SWEET ALERT -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <% const {data} = apiResponse; %>
+    <% if(data.alert){%>
+      <template id="alert-template">
+        <swal-title><%=data.title%></swal-title>
+        <swal-html><p><%=data.message%></p></swal-html>
+        <swal-icon type="<%=(apiResponse.success)?'success':'error'%>"></swal-icon>
+        <swal-button type="confirm">Okay</swal-button>
+      </template>
+        <script>
+            Swal.fire({
+                template: "#alert-template"
+            });
+        </script>
+      <%}%>
+
+    <%-include("../partials/scripts")%>
+    <script>$("form").reset</script>
+  </body>
+</html>

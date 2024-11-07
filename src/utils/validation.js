@@ -15,10 +15,10 @@ const userLoginSchema = z.object({
 
 const studentSchema = z.object({
   name: z.string(),
-  rollno: z.number(),
-  medium: new z.ZodEnum(["English", "Gujarati"]),
+  rollno: z.string(),
+  gender: z.enum(["Male", "Female"]),
+  medium: z.enum(["English", "Gujarati"]),
   section: z.string(),
-  gender: new z.ZodEnum(["Male", "Female"]),
 });
 
 const categorySchema = z.object({
@@ -39,7 +39,7 @@ const validateStudent = (studentdata) => {
 };
 
 const validateBookCategory = (BookCateogryData) => {
-  const validation = categorySchema.safeParse(BookCateogryData);  
+  const validation = categorySchema.safeParse(BookCateogryData);
   return validation.success;
 };
 
