@@ -13,7 +13,7 @@ const bookSchema = new mongoose.Schema(
     },
     bookcategory: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
+      ref: "BookCategory",
     },
     isIssued: {
       type: Boolean,

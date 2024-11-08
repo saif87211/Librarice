@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student</title>
+    <%-include("../partials/styles")%>
+  </head>
+  <body>
+    <%-include("../partials/header")%>
+    <%const {bookCategories, book} = apiResponse.data %>
+    <!-- MAIN BODY STARTS -->
+    <main class="split-background">
+      <div class="container min-vh-80">
+        <div class="row justify-content-center">
+          <!-- BOOK FORM -->
+          <div class="col-lg-10">
+            <div class="card bg-white rounded-0 shadow my-4">
+              <h5 class="card-header py-3">Edit Book</h5>
+              <div class="card-body bg-secondary-subtle p-4">
+                <form
+                  method="post"
+                  action="/book"
+                  class="needs-validation"
+                  novalidate
+                >
+                <input type="hidden" name="id" value="<%=book._id%>">
+                  <div class="row">
+                    <div class="col">
+                      <!-- UNIQUE ID FIELD -->
+                      <div class="form-floating mb-3">
+                        <input
+                          id="uniqueId"
+                          name="uniqueId"
+                          class="form-control rounded-0 shadow"
+                          type="uniqueId"
+                          placeholder="Book Id."
+                          value="<%=book.uniqueId%>"
+                          required
+                        />
+                        <label for="rollno">Book Id</label>
+                        <div class="invalid-feedback">
+                          Book id is required.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col">
+                      <!-- BOOK NAME FIELD -->
+                      <div class="form-floating mb-3">
+                        <input
+                          id="bookname"
+                          name="bookname"
+                          class="form-control rounded-0 shadow shadow"
+                          type="text"
+                          placeholder="Book Name"
+                          value="<%=book.bookname%>"
+                          required
+                        />
+                        <label for="stuname">Book Name</label>
+                        <div class="invalid-feedback">
+                          Book name is required.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md">
+                      <!-- CATEGORY FIELD -->
+                      <div class="form-floating mb-3">
+                        <select
+                          id="medium"
+                          class="form-select rounded-0 shadow"
+                          name="bookcategory"
+                          required
+                        >
+                          <option selected disabled value="">
+                            Select book category
+                          </option>
+                          <% for(let i = 0; i < bookCategories.length; i++){%>
+                          <option <%= book.bookcategory.categoryname === bookCategories[i].categoryname ? "selected" : ""  %> value="<%=bookCategories[i].categoryname%>" ><%=bookCategories[i].categoryname%></option>
+                            <%}%>
+                        </select>
+                        <div class="invalid-feedback">
+                          Please select a book category.
+                        </div>
+                        <label for="class">Book Category</label>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- SUBMIT BUTTON -->
+                  <div class="d-grid gap-2 mt-3">
+                    <button class="btn btn-primary rounded-0" type="submit">
+                      Edit Book
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <!-- MAIN BODY ENDS -->
+    <%-include("../partials/footer")%>
+
+    <!-- SWEET ALERT -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <% const {data} = apiResponse; %>
+    <% if(data.alert){%>
+      <template id="alert-template">
+        <swal-title><%=data.title%></swal-title>
+        <swal-html><p><%=data.message%></p></swal-html>
+        <swal-icon type="<%=(apiResponse.success)?'success':'error'%>"></swal-icon>
+        <swal-button type="confirm">Okay</swal-button>
+      </template>
+        <script>
+            Swal.fire({
+                template: "#alert-template"
+            });
+        </script>
+      <%}%>
+
+    <%-include("../partials/scripts")%>
+    <script>$("form").reset</script>
+  </body>
+</html>

@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Book</title>
+    <%-include("../partials/styles")%>
+  </head>
+  <body>
+    <%-include("../partials/header")%>
+
+    <!-- MAIN BODY STARTS -->
+    <main class="split-background">
+      <div class="container">
+        <div class="row justify-content-center">
+          <!-- STUDENT FORM -->
+          <div class="col-lg-8">
+            <div class="card bg-white rounded-0 shadow my-4">
+              <h5 class="card-header py-3">Add Book</h5>
+              <div class="card-body bg-secondary-subtle p-4">
+                <form
+                  method="post"
+                  action="/book"
+                  class="needs-validation"
+                  novalidate
+                >
+                  <div class="row">
+                    <div class="col">
+                      <!-- UNIQUE ID FIELD -->
+                      <div class="form-floating mb-3">
+                        <input
+                          id="uniqueId"
+                          name="uniqueId"
+                          class="form-control rounded-0 shadow"
+                          type="uniqueId"
+                          placeholder="Book Id."
+                          required
+                        />
+                        <label for="rollno">Book Id</label>
+                        <div class="invalid-feedback">
+                          Book id is required.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col">
+                      <!-- BOOK NAME FIELD -->
+                      <div class="form-floating mb-3">
+                        <input
+                          id="bookname"
+                          name="bookname"
+                          class="form-control rounded-0 shadow shadow"
+                          type="text"
+                          placeholder="Book Name"
+                          required
+                        />
+                        <label for="stuname">Book Name</label>
+                        <div class="invalid-feedback">
+                          Book name is required.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md">
+                      <!-- CATEGORY FIELD -->
+                      <div class="form-floating mb-3">
+                        <select
+                          id="medium"
+                          class="form-select rounded-0 shadow"
+                          name="bookcategory"
+                          required
+                        >
+                        <%const {bookCategories} = apiResponse.data %>
+                          <option selected disabled value="">
+                            Select book category
+                          </option>
+                          <% for(let i = 0; i < bookCategories.length; i++){%>
+                          <option value="<%=bookCategories[i].categoryname%>" ><%=bookCategories[i].categoryname%></option>
+                            <%}%>
+                        </select>
+                        <div class="invalid-feedback">
+                          Please select a book category.
+                        </div>
+                        <label for="class">Book Category</label>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- SUBMIT BUTTON -->
+                  <div class="d-grid gap-2 mt-3">
+                    <button class="btn btn-primary rounded-0" type="submit">
+                      Add Book
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <!-- TABLE START-->
+          <div class="row justify-content-center">
+            <div class="col">
+              <div class="card bg-white rounded-0 shadow my-4">
+                <h5 class="card-header py-3">Students</h5>
+                <div class="card-body px-4">
+                  <table id="list" class="table table-primary table-bordered">
+                    <thead>
+                      <tr>
+                        <th scope="col">Sr No.</th>
+                        <th scope="col">Unique Id</th>
+                        <th scope="col">Book Name</th>
+                        <th scope="col">Book Category</th>
+                        <th scope="col">Edit or Delete</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% const books = apiResponse.data.books %>
+                      <% for(let i = 0; i < books.length; i++){%>
+                        <tr>
+                          <th><%=i+1%></th>
+                          <td><%=books[i].uniqueId%></td>
+                          <td><%=books[i].bookname%></td>
+                          <td><%=books[i].bookcategory.categoryname%></td>
+                          <td class="d-flex column-gap-1">
+                            <form method="post" action="/book/book-edit">
+                              <input type="hidden" name="id" value="<%=books[i]._id%>">
+                              <button
+                                type="submit"
+                                class="btn btn-sm btn-primary rounded-circle"
+                              >
+                                <i class="bi bi-pencil"></i>
+                              </button>
+                            </form>
+                            <form class="delete-form" method="post" action="/book-delete">
+                              <input type="hidden" name="id" value="<%=books[i]._id%>">
+                              <button
+                                type="submit"
+                                class="btn btn-sm btn-danger rounded-circle"                                
+                                >
+                                <i class="bi bi-trash"></i>
+                              </button>
+                          </form>
+                          </td>
+                        </tr>
+                        <%}%>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- TABLE END -->
+        </div>
+      </div>
+    </main>
+    <!-- MAIN BODY ENDS -->
+    <%-include("../partials/footer")%>
+
+    <!-- SWEET ALERT -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <% const {data} = apiResponse; %>
+    <% if(data.alert){%>
+      <template id="alert-template">
+        <swal-title><%=data.title%></swal-title>
+        <swal-html><p><%=data.message%></p></swal-html>
+        <swal-icon type="<%=(apiResponse.success)?'success':'error'%>"></swal-icon>
+        <swal-button type="confirm">Okay</swal-button>
+      </template>
+        <script>
+            Swal.fire({
+                template: "#alert-template"
+            });
+        </script>
+      <%}%>
+
+    <%-include("../partials/scripts")%>
+    <script>
+      $(".delete-form").on("submit", async function (e) {
+        e.preventDefault();
+        const result = await Swal.fire({
+          title: "Are sure you want to delete this entry?",
+          icon:"warning",
+          showCancelButton:true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+        });
+        if(result.isConfirmed) 
+          this.submit();
+        else 
+          e.preventDefault();
+      });
+    </script>
+  </body>
+</html>
