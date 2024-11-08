@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const bookSchema = new mongoose.Schema(
   {
     uniqueId: {
-      type: Number,
+      type: String,
       required: true,
       unique: true,
     },
@@ -11,13 +11,14 @@ const bookSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    bookCategory: {
+    bookcategory: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
     },
     isIssued: {
       type: Boolean,
       required: true,
+      default: false,
     },
   },
   { timestamps: true }

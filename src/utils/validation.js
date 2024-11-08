@@ -24,6 +24,13 @@ const studentSchema = z.object({
 const categorySchema = z.object({
   categoryname: z.string(),
 });
+
+const bookSchema = z.object({
+  uniqueId: z.string(),
+  bookname: z.string(),
+  bookcategory: z.string()
+});
+
 const validateRegisterUser = (userdata) => {
   const validation = userRegisterSchema.safeParse(userdata);
   return validation.success;
@@ -38,14 +45,19 @@ const validateStudent = (studentdata) => {
   return validation.success;
 };
 
-const validateBookCategory = (BookCateogryData) => {
-  const validation = categorySchema.safeParse(BookCateogryData);
+const validateBookCategory = (bookCateogryData) => {
+  const validation = categorySchema.safeParse(bookCateogryData);
   return validation.success;
 };
 
+const validateBook = (bookData) => {
+  const validation = bookSchema.safeParse(bookData);
+  return validation.success;
+}
 export {
   validateRegisterUser,
   validateLoginUser,
   validateStudent,
   validateBookCategory,
+  validateBook
 };
