@@ -6,10 +6,10 @@
   aria-labelledby="sidebarcanvas"
 >
   <!-- SIDEBAR HEADER START -->
-  <div class="offcanvas-header border-bottom py-2 border-1">
-    <h5 class="offcanvas-title" id="sidebarcanvas">
+  <div class="offcanvas-header border-bottom py-3 border-1">
+    <h5 class="offcanvas-title fs-4" id="sidebarcanvas">
       <span class="bi bi-book"></span>
-      <span>Library</span>
+      <span>Librarice</span>
     </h5>
     <button
       type="button"
@@ -24,10 +24,10 @@
     <div id="usermenu" class="accordion accordion-flush my-2">
       <!-- DASHBOARD -->
       <a
-        href="#"
+        href="/dashboard"
         class="dashboard-menu hover-item d-flex align-items-center justify-content-between border-top border-bottom mt-1 mb-3 link-body-emphasis text-decoration-none"
       >
-        <div class="fw-bold">
+        <div class="fw-bold fs-5">
           <i class="bi bi-display"></i>
           <span>Dashboard</span>
         </div>
@@ -37,7 +37,7 @@
       <div class="accordion-item">
         <h2 class="accordion-header">
           <button
-            class="accordion-button collapsed fw-bold shadow-none"
+            class="accordion-button collapsed fw-bold shadow-none fs-5"
             type="button"
             data-bs-toggle="collapse"
             data-bs-target="#usercollapse"
@@ -55,8 +55,8 @@
           data-bs-parent="#usermenu"
         >
           <div class="accordion-body p-0">
-            <div class="list-group fs-7">
-              <a href="#" class="list-group-item hover-item">Insert User</a>
+            <div class="list-group fs-6">
+              <a href="#" class="list-group-item hover-item">Student View</a>
               <a href="#" class="list-group-item hover-item">Update User</a>
               <a href="#" class="list-group-item hover-item">Delete User</a>
             </div>
@@ -67,7 +67,7 @@
       <div class="accordion-item">
         <h2 class="accordion-header">
           <button
-            class="accordion-button collapsed fw-bold shadow-none"
+            class="accordion-button collapsed fw-bold shadow-none fs-5"
             type="button"
             data-bs-toggle="collapse"
             data-bs-target="#bookcollapse"
@@ -75,7 +75,7 @@
             aria-controls="bookcollapse"
           >
             <i class="bi bi-book"></i>
-            <span class="ps-1">Book</span>
+            <span class="ps-1">Books</span>
           </button>
         </h2>
 
@@ -85,10 +85,15 @@
           data-bs-parent="#usermenu"
         >
           <div class="accordion-body p-0">
-            <div class="list-group fs-7">
-              <a href="#" class="list-group-item hover-item">Insert Book</a>
-              <a href="#" class="list-group-item hover-item">Update Book</a>
-              <a href="#" class="list-group-item hover-item">Delete Book</a>
+            <div class="list-group fs-6">
+              <a href="/book" class="list-group-item hover-item">
+                <i class="bi bi-journals"></i>
+                <span>Book View</span>
+              </a>
+              <a href="/book-category" class="list-group-item hover-item">
+                <i class="bi bi-tags-fill"></i>
+                <span>Book Category</span>
+              </a>
             </div>
           </div>
         </div>
@@ -97,7 +102,7 @@
       <div class="accordion-item border-bottom">
         <h2 class="accordion-header">
           <button
-            class="accordion-button collapsed fw-bold shadow-none"
+            class="accordion-button collapsed fw-bold shadow-none fs-5"
             type="button"
             data-bs-toggle="collapse"
             data-bs-target="#studentcollapse"
@@ -115,10 +120,15 @@
           data-bs-parent="#usermenu"
         >
           <div class="accordion-body p-0">
-            <div class="list-group fs-7">
-              <a href="#" class="list-group-item hover-item">Insert Student</a>
-              <a href="#" class="list-group-item hover-item">Update Student</a>
-              <a href="#" class="list-group-item hover-item">Delete Student</a>
+            <div class="list-group fs-6">
+              <a href="/student" class="list-group-item hover-item">
+                <i class="bi bi-people"></i>
+                <span>Student List</span>
+              </a>
+              <a href="/section" class="list-group-item hover-item">
+                <i class="bi bi-vr"></i>
+                <span>Section List</span>
+              </a>
             </div>
           </div>
         </div>
