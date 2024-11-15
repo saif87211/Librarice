@@ -1,10 +1,10 @@
-import dotenv from "dotenv";
+import { config } from "./config/config.js";
 import { app } from "./app.js";
 import dbConnect from "./db/db.js";
 
-dotenv.config("./.env");
 
-const port = process.env.PORT || 3000;
+
+const port = config.port || 3000;
 
 dbConnect()
   .then(() => {

@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
+import { config } from "../config/config.js"
 
 export const verifyJwt = asyncHandler(async (req, res, next) => {
   try {
@@ -15,7 +16,7 @@ export const verifyJwt = asyncHandler(async (req, res, next) => {
       return res.status(401).render("login", { apiResponse });
     }
 
-    const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
+    const decodedToken = jwt.verify(token, config.tokenSecret);
 
     const user = await User.findById(decodedToken?._id).select("-password");
 

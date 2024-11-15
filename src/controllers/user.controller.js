@@ -6,6 +6,7 @@ import {
   validateLoginUser,
 } from "../utils/validation.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { config } from "../config/config.js"
 
 const cookieOptions = {
   httpOnly: true,
@@ -22,8 +23,8 @@ const generateToken = async (userId) => {
         fullname: user.fullname,
         isAdmin: user.isAdmin,
       },
-      process.env.TOKEN_SECRET,
-      { expiresIn: process.env.TOKEN_EXPIRY }
+      config.tokenSecret,
+      { expiresIn: config.tokenExpiry }
     );
   } catch (error) {
     console.log(error);
