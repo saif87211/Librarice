@@ -4,54 +4,46 @@ import { Student } from "../models/student.model.js";
 import { validateStudent } from "../utils/validation.js";
 import { Section } from "../models/section.model.js";
 
+//RENDER STUDENT
 const renderStudentPage = asyncHandler(async (req, res) => {
   const students = await Student.find().select().populate({ path: "section" });
   const sections = await Section.find();
-  if (!students) {
-    students = [];
+
+  let apiResponse;
+  if (req.session.apiResponse) {
+    apiResponse = req.session.apiResponse;
+    req.session.apiResponse = null;
+    apiResponse.data.students = students;
+    apiResponse.data.sections = sections;
+  } else {
+    apiResponse = new ApiResponse(200, { alert: false, students, sections });
   }
-  return res
-    .status(200)
-    .render(
-      "student",
-      {
-        apiResponse: new ApiResponse(200, { alert: false, students, sections })
-      });
+  return res.status(apiResponse.statuscode).render("student", { apiResponse });
 });
 
+//RENDER STUDENT-EDIT
 const renderStudentEdit = asyncHandler(async (req, res) => {
   const id = req.body.id;
 
-  const students = await Student.find().populate({ path: "section" });
-  const sections = await Section.find();
   if (!id) {
-    return res
-      .status(400)
-      .render("student/", {
-        apiResponse: new ApiResponse(400, {
-          alert: true,
-          title: "Something went wrong",
-          message: "Try again after sometime",
-          sections,
-          students
-        })
-      });
+    req.session.apiResponse = new ApiResponse(400, {
+      alert: true,
+      title: "Something went wrong",
+      message: "Try again after sometime",
+    });
+    return res.redirect("/student");
   }
-  const student = students.find(s => String(s._id === id));
+  const student = await Student.findById(id).populate({ path: "section" });
   if (!student) {
-    return res
-      .status(400)
-      .render("student/", {
-        apiResponse: new ApiResponse(400, {
-          alert: true,
-          title: "Something went wrong",
-          message: "Entry was not found.",
-          sections,
-          students
-        })
-      });
+    req.session.apiResponse = new ApiResponse(400, {
+      alert: true,
+      title: "Something went wrong",
+      message: "Entry was not found.",
+    });
+    return res.redirect("/student");
   }
 
+  const sections = await Section.find();
   return res
     .status(200)
     .render("student/student-edit", {
@@ -63,6 +55,7 @@ const renderStudentEdit = asyncHandler(async (req, res) => {
     });
 });
 
+//CREATE OR EDIT STUDENT
 const createOrUpdateStudent = asyncHandler(async (req, res) => {
   const { id, name, rollno, medium, section, gender } = req.body;
   const zodValidation = validateStudent({
@@ -73,32 +66,23 @@ const createOrUpdateStudent = asyncHandler(async (req, res) => {
     gender,
   });
 
-  const students = await Student.find().populate({ path: "section" });
-  const sections = await Section.find();
-
   if (!zodValidation) {
-    return res.status(400).render("student", {
-      apiResponse: new ApiResponse(400, {
-        alert: true,
-        title: "Invlaid input",
-        message: "Please enter valid data",
-        students,
-        sections,
-      })
+    req.session.apiResponse = new ApiResponse(400, {
+      alert: true,
+      title: "Invlaid input",
+      message: "Please enter valid data",
     });
+    return res.redirect("/student");
   }
 
   const newSection = await Section.findOne({ name: section });
   if (!newSection) {
-    return res.status(400).render("student", {
-      apiResponse: new ApiResponse(400, {
-        alert: true,
-        title: "Invlaid input",
-        message: "Please enter valid data",
-        students,
-        sections
-      })
+    req.session.apiResponse = new ApiResponse(400, {
+      alert: true,
+      title: "Invlaid input",
+      message: "Please enter valid data",
     });
+    return res.redirect("/student");
   }
   if (id) {
     await Student.findByIdAndUpdate(id, {
@@ -117,38 +101,28 @@ const createOrUpdateStudent = asyncHandler(async (req, res) => {
       gender,
     });
   }
-  const updatedStudents = await Student.find().populate({ path: "section" });
-  return res
-    .status(200)
-    .render("student", {
-      apiResponse: new ApiResponse(200, {
-        alert: true,
-        title: id
-          ? "Studnet updated successfully"
-          : "Student added successfully",
-        message: "",
-        students: updatedStudents,
-        sections
-      })
-    });
+  req.session.apiResponse = new ApiResponse(200, {
+    alert: true,
+    title: id
+      ? "Studnet updated successfully"
+      : "Student added successfully",
+    message: "",
+  });
+  return redirect("/student");
 });
 
+//DELETE STUDENT
 const deleteStudent = asyncHandler(async (req, res) => {
   const id = req.body.id;
 
   await Student.findById(id).deleteOne();
 
-  const students = await Student.find().populate({ path: "section" });
-  const sections = await Section.find();
-  return res.status(200).
-    render("student", {
-      apiResponse: new ApiResponse(200, {
-        alert: true,
-        title: "Student was deleted Succesfully",
-        students,
-        sections
-      })
-    });
+  req.session.apiResponse = new ApiResponse(200, {
+    alert: true,
+    title: "Student was deleted Succesfully",
+    message: ""
+  });
+  return res.redirect("/student");
 });
 
 export { renderStudentPage, renderStudentEdit, createOrUpdateStudent, deleteStudent };

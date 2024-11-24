@@ -12,6 +12,7 @@ const cookieOptions = {
   httpOnly: true,
   secure: true,
 };
+
 const generateToken = async (userId) => {
   try {
     const user = await User.findOne({ _id: userId });
@@ -32,18 +33,36 @@ const generateToken = async (userId) => {
   }
 };
 
+//RENDER REGISTER
 const renderRegister = asyncHandler(async (req, res) => {
-  return res.status(200).render("register", { apiResponse: new ApiResponse(200, { alert: false }) });
+  let apiResponse;
+  if (req.session.apiResponse) {
+    apiResponse = JSON.parse(JSON.stringify(req.session.apiResponse));
+    req.session.apiResponse = null;
+  } else {
+    apiResponse = new ApiResponse(200, { alert: false });
+  }
+  return res.status(apiResponse.statuscode).render("register", { apiResponse });
 });
 
+//REDIRECT LOGIN
 const redirectToLogin = asyncHandler(async (req, res) => {
   return res.status(200).redirect("/login");
 });
 
+//RENDER LOGIN
 const renderLogin = asyncHandler(async (req, res) => {
-  return res.status(200).render("login", { apiResponse: new ApiResponse(200, { alert: false }) });
+  let apiResponse;
+  if (req.session.apiResponse) {
+    apiResponse = JSON.parse(JSON.stringify(req.session.apiResponse));
+    req.session.apiResponse = null;
+  } else {
+    apiResponse = new ApiResponse(200, { alert: false });
+  }
+  return res.status(apiResponse.statuscode).render("login", { apiResponse });
 });
 
+//REGISTER
 const registerUser = asyncHandler(async (req, res) => {
   const { fullname, username, email, password, isAdmin } = req.body;
   const zodValidation = validateRegisterUser({
@@ -55,13 +74,12 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (!zodValidation) {
-    return res.status(400).render("register", {
-      apiResponse: new ApiResponse(400, {
-        alert: true,
-        title: "Invalid fields",
-        message: "Provide proper fields",
-      })
+    req.session.apiResponse = new ApiResponse(400, {
+      alert: true,
+      title: "Invalid fields",
+      message: "Provide proper fields",
     });
+    return res.redirect("/register");
   }
 
   let isUserExisted = await User.findOne({
@@ -69,13 +87,13 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (isUserExisted) {
-    return res.status(409).render("register", {
-      apiResponse: new ApiResponse(409, {
-        alert: true,
-        title: "User already exist",
-        message: "user other email or username",
-      })
+    req.session.apiResponse = new ApiResponse(409, {
+      alert: true,
+      title: "User already exist",
+      message: "Email or username is already exist"
     });
+
+    return res.redirect("/register");
   }
 
   const user = await User.create({
@@ -87,72 +105,71 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (!user) {
-    return res.status(500).render("register", {
-      apiResponse: new ApiResponse(500, {
-        alert: true,
-        title: "Internal server error",
-        message: "Something went wrong while registering user!",
-      })
+    req.session.apiResponse = new ApiResponse(500, {
+      alert: true,
+      title: "Internal server error",
+      message: "Something went wrong while registering user!",
     });
+    return res.redirect("/register");
   }
 
-  return res.status(200).render("register", {
-    apiResponse: new ApiResponse(200, {
-      alert: true,
-      title: "User Successfully register",
-      message: "Visit login page",
-    })
-  });
+  req.session.apiResponse = new ApiResponse(200, {
+    alert: true,
+    title: "User Successfully register",
+    message: "Visit login page",
+  })
+  return res.redirect("/register");
 });
 
+//LOGIN
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   const zodValidation = validateLoginUser({ email, password });
 
   if (!zodValidation) {
-    return res.status(400).render("login", {
-      apiResponse: new ApiResponse(400, {
-        alert: true,
-        title: "Invlaid input",
-        message: "Please enter valid data",
-      })
+    req.session.apiResponse = new ApiResponse(400, {
+      alert: true,
+      title: "Invlaid input",
+      message: "Please enter valid data",
     });
+
+    return res.redirect("/login");
   }
 
   const user = await User.findOne({ email });
 
   if (!user) {
-    return res.status(400).render("login", {
-      apiResponse: new ApiResponse(400, {
-        alert: true,
-        title: "Failed to login",
-        message: "User does not exist",
-      })
+    req.session.apiResponse = new ApiResponse(400, {
+      alert: true,
+      title: "Failed to login",
+      message: "User does not exist",
     });
+
+    return res.redirect("/login");
   }
 
   const isPasswordIsValid = await user.isPasswordCorrect(password);
 
   if (!isPasswordIsValid) {
-    return res.status(401).render("login", {
-      apiResponse: new ApiResponse(401, {
-        alert: true,
-        title: "Failed to login",
-        message: "Password is Invalid",
-      })
+    req.session.apiResponse = new ApiResponse(401, {
+      alert: true,
+      title: "Failed to login",
+      message: "Password is Invalid",
     });
+
+    return res.redirect("/login");
   }
 
   const token = await generateToken(user._id);
 
   if (!token) {
-    return res.status(500).render("login", {
-      apiResponse: new ApiResponse(500, {
-        alert: true,
-        title: "Interal server error",
-        message: "Something Went Wrong",
-      })
+    req.session.apiResponse = new ApiResponse(500, {
+      alert: true,
+      title: "Interal server error",
+      message: "Something Went Wrong",
     });
+
+    return res.redirect("/login");
   }
 
   return res

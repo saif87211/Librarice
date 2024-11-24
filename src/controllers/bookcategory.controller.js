@@ -1,68 +1,70 @@
-import { asyncHandler } from "../utils/asyncHandler.js";
-import { ApiResponse } from "../utils/ApiResponse.js";
-import { BookCategory } from "../models/bookCategory.model.js";
-import { validateBookCategory } from "../utils/validation.js";
+import { asyncHandler } from '../utils/asyncHandler.js';
+import { ApiResponse } from '../utils/ApiResponse.js';
+import { BookCategory } from '../models/bookCategory.model.js';
+import { validateBookCategory } from '../utils/validation.js';
 
+//RENDER CATEGORY
 const renderBookCategoy = asyncHandler(async (req, res) => {
   const bookCategories = await BookCategory.find();
-  return res.status(200).render("book-category/", { apiResponse: new ApiResponse(200, { alert: false, bookCategories }) });
+
+  let apiResponse;
+  if (req.session.apiResponse) {
+    apiResponse = JSON.parse(JSON.stringify(req.session.apiResponse));
+    req.session.apiResponse = null;
+    apiResponse.data.bookCategories = bookCategories;
+  } else {
+    apiResponse = new ApiResponse(200, { alert: false, bookCategories });
+  }
+  return res
+    .status(apiResponse.statuscode)
+    .render('book-category/', { apiResponse });
 });
 
+//RENDER CATEGORY-EDIT
 const renderBookCategoryEdit = asyncHandler(async (req, res) => {
   const categoryId = req.body.id;
 
-  const bookCategories = await BookCategory.find();
-
   if (!categoryId) {
-    res
-      .status(400)
-      .render("book-category/", {
-        apiResponse: new ApiResponse(400, {
-          alert: true,
-          title: "Invalid data",
-          message: "Can't find the category",
-          bookCategories
-        })
-      })
+    req.session.apiResponse = new ApiResponse(400, {
+      alert: true,
+      title: 'Invalid data',
+      message: "Can't find the category",
+    });
+    return res.redirect('/book-category');
   }
 
-  const bookCategory = bookCategories.find(bc => String(bc._id) === String(categoryId));
+  const bookCategory = await BookCategory.findById(categoryId);
 
   if (!bookCategory) {
-    res
-      .status(400)
-      .render("book-category/", {
-        apiResponse: new ApiResponse(400, {
-          alert: true,
-          title: "Invalid data",
-          message: "Can't find the category",
-          bookCategories
-        })
-      })
+    req.session.apiResponse = new ApiResponse(400, {
+      alert: true,
+      title: 'Invalid data',
+      message: "Can't find the category",
+    });
+    return res.redirect('/book-category');
   }
 
-  res.status(200).render("book-category/book-category-edit", {
+  res.status(200).render('book-category/book-category-edit', {
     apiResponse: new ApiResponse(200, {
       alert: false,
-      bookCategory
-    })
+      bookCategory,
+    }),
   });
 });
 
+//CREATE OR EDIT CATEGORY
 const createOrUpdateCategoy = asyncHandler(async (req, res) => {
   const { id, categoryname } = req.body;
   const zodValidation = validateBookCategory({ categoryname });
 
   const bookCategories = await BookCategory.find();
   if (!zodValidation) {
-    return res.status(400).render("book-category/", {
-      apiResponse: new ApiResponse(400, {
-        alert: true,
-        title: "Invlaid input",
-        message: "Please enter valid data",
-        bookCategories
-      })
+    req.session.apiResponse = new ApiResponse(400, {
+      alert: true,
+      title: 'Invalid input',
+      message: 'Please enter valid data',
     });
+    return res.redirect('/book-category');
   }
 
   if (id) {
@@ -70,32 +72,36 @@ const createOrUpdateCategoy = asyncHandler(async (req, res) => {
   } else {
     await BookCategory.create({ categoryname });
   }
-  const updatedBookCategories = await BookCategory.find();
-  return res.status(200).render("book-category/", {
-    apiResponse: new ApiResponse(200, {
-      alert: true,
-      title: id
-        ? "Category updated successfully"
-        : "Category created successfully",
-      message: "",
-      bookCategories: updatedBookCategories,
-    })
+
+  req.session.apiResponse = new ApiResponse(200, {
+    alert: true,
+    title: id
+      ? 'Category updated successfully'
+      : 'Category created successfully',
+    message: '',
   });
+  return res.redirect('/book-category');
 });
 
+//DELETE CATEGORY
 const deleteBookCategory = asyncHandler(async (req, res) => {
   const id = req.body.id;
 
   await BookCategory.findById(id).deleteOne();
 
   const bookCategories = await BookCategory.find();
-  return res.status(200).render("book-category/", {
-    apiResponse: new ApiResponse(200, {
-      alert: true,
-      title: "Category was deleted Succesfully",
-      bookCategories,
-    })
+
+  req.session.apiResponse = new ApiResponse(200, {
+    alert: true,
+    title: 'Category was deleted Succesfully',
+    bookCategories,
   });
+  return res.redirecct('/book-category');
 });
 
-export { renderBookCategoy, renderBookCategoryEdit, createOrUpdateCategoy, deleteBookCategory };
+export {
+  renderBookCategoy,
+  renderBookCategoryEdit,
+  createOrUpdateCategoy,
+  deleteBookCategory,
+};

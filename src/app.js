@@ -33,13 +33,6 @@ app.use(
 app.set("view engine", "ejs");
 app.set("views", "./src/views");
 
-app.use((req, _res, next) => {
-  if (req.session.apiResponse) {
-    req.session.apiResponse.data = {};
-  }
-  next();
-});
-
 import userRoute from "./routes/user.routes.js";
 import dashboardRoute from "./routes/dashboard.routes.js";
 import sectionRoute from "./routes/section.routes.js";

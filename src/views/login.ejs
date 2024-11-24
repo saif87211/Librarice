@@ -33,7 +33,7 @@
 
                             <!-- PASSWORD FIELD -->
                             <div class="form-floating mb-3">
-                                <input id="password" name="password" type="password" pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$"
+                                <input id="password" name="password" type="password" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
                                     class="form-control rounded-0 shadow" placeholder="Password" required />
                                 <label for="password">Password</label>
                                 <div class="invalid-feedback">Password is required.</div>

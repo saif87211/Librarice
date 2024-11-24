@@ -4,45 +4,48 @@ import { Book } from "../models/book.model.js";
 import { BookCategory } from "../models/bookCategory.model.js"
 import { validateBook } from "../utils/validation.js";
 
+//RENDER BOOK
 const renderBookPage = asyncHandler(async (req, res) => {
     const books = await Book.find().populate("bookcategory");
     const bookCategories = await BookCategory.find();
 
-    return res.status(200).render("book/", {
-        apiResponse: new ApiResponse(200, { alert: false, books, bookCategories })
-    })
+    let apiResponse;
+    if (req.session.apiResponse) {
+        apiResponse = JSON.parse(JSON.stringify(req.session.apiResponse));
+        apiResponse.data.books = books;
+        apiResponse.data.bookCategories = bookCategories;
+        req.session.apiResponse = null;
+    } else {
+        apiResponse = new ApiResponse(200, { alert: false, books, bookCategories });
+    }
+
+    return res.status(apiResponse.statuscode).render("book/", { apiResponse });
 });
 
+//RENDER BOOK-EDIT
 const renderBookEdit = asyncHandler(async (req, res) => {
     const id = req.body.id;
 
-    const books = await Book.find().populate("bookcategory");
-    const bookCategories = await BookCategory.find();
-
     if (!id) {
-        return res.status(400).render("book/", {
-            apiResponse: new ApiResponse(400, {
-                alert: true,
-                title: "Invalid input",
-                message: "Try again after sometime",
-                books,
-                bookCategories
-            })
-        })
+        req.session.apiResponse = new ApiResponse(400, {
+            alert: true,
+            title: "Invalid input",
+            message: "Try again after sometime",
+        });
+        return res.redirect("book/");
     }
 
+    const books = await Book.find().populate("bookcategory");
+    const bookCategories = await BookCategory.find();
     const book = books.find(b => String(b._id) === String(id));
 
     if (!book) {
-        return res.status(400).render("book/", {
-            apiResponse: new ApiResponse(400, {
-                alert: true,
-                title: "Invalid input",
-                message: "Try again after sometime",
-                books,
-                bookCategories
-            })
-        })
+        req.session.apiResponse = new ApiResponse(400, {
+            alert: true,
+            title: "Invalid input",
+            message: "Try again after sometime",
+        });
+        return res.redirect("book/");
     }
 
     return res.status(200).render("book/book-edit", {
@@ -54,37 +57,31 @@ const renderBookEdit = asyncHandler(async (req, res) => {
     });
 });
 
+//RENDER OR EDIT BOOK
 const createOrUpdateBook = asyncHandler(async (req, res) => {
     const { id, uniqueId, bookname, bookcategory } = req.body;
-    console.log({ id, uniqueId, bookname, bookcategory });
+
     const zodValidation = validateBook({ uniqueId, bookname, bookcategory });
 
-    const books = await Book.find().populate("bookcategory");
-
-    const bookCategories = await BookCategory.find();
 
     if (!zodValidation) {
-        return res.status(400).render("book/", {
-            apiResponse: new ApiResponse(400, {
-                alert: true,
-                title: "Input data is invalid",
-                message: "Try again after some time",
-                books,
-                bookCategories
-            })
+        req.session.apiResponse = new ApiResponse(400, {
+            alert: true,
+            title: "Input data is invalid",
+            message: "Try again after some time",
         });
+        return res.redirect("/book");
     }
 
-    const category = bookCategories.find(bc => bc.categoryname === bookcategory);
+    const category = await BookCategory.findOne({ categoryname: bookcategory });
 
     if (!category) {
-        return res.status(400).render("book/", {
-            apiResponse: new ApiResponse(400, {
-                alert: true,
-                title: "Input data is invalid",
-                message: "Try again after some time"
-            })
+        req.session.apiResponse = new ApiResponse(400, {
+            alert: true,
+            title: "Input data is invalid",
+            message: "Try again after some time"
         });
+        return res.redirect("/book");
     }
 
     if (id) {
@@ -94,35 +91,25 @@ const createOrUpdateBook = asyncHandler(async (req, res) => {
         await Book.create({ uniqueId, bookname, bookcategory: category._id });
     }
 
-    const updatedBooks = await Book.find().populate("bookcategory");
-
-    return res.status(200).render("book/", {
-        apiResponse: new ApiResponse(200, {
-            alert: true,
-            title: id ? "Book updated succesfully." : "Book added succesfully.",
-            message: "",
-            bookCategories,
-            books: updatedBooks
-        })
+    req.session.apiResponse = new ApiResponse(200, {
+        alert: true,
+        title: id ? "Book updated succesfully." : "Book added succesfully.",
+        message: "",
     });
+    return res.redirect("/book");
 });
 
+//DELETE
 const deleteBook = asyncHandler(async (req, res) => {
     const id = req.body.id;
-    console.log(id);
+
     await Book.findByIdAndDelete(id);
 
-    const books = await Book.find().populate("bookcategory");
-    const bookCategories = await BookCategory.find();
-
-    return res.status(200).render("book/", {
-        apiResponse: new ApiResponse(200, {
-            alert: true,
-            title: "Book deleted succesfully",
-            message: "",
-            books,
-            bookCategories
-        })
+    req.session.apiResponse = new ApiResponse(200, {
+        alert: true,
+        title: "Book deleted succesfully",
+        message: "",
     });
+    return res.redirect("/book");
 });
 export { renderBookPage, renderBookEdit, createOrUpdateBook, deleteBook };
