@@ -108,7 +108,7 @@ const createOrUpdateStudent = asyncHandler(async (req, res) => {
       : "Student added successfully",
     message: "",
   });
-  return redirect("/student");
+  return res.redirect("/student");
 });
 
 //DELETE STUDENT

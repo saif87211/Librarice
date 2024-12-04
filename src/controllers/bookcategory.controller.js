@@ -96,7 +96,7 @@ const deleteBookCategory = asyncHandler(async (req, res) => {
     title: 'Category was deleted Succesfully',
     bookCategories,
   });
-  return res.redirecct('/book-category');
+  return res.redirect('/book-category');
 });
 
 export {
