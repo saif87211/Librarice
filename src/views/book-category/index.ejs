@@ -32,7 +32,7 @@
                         <input
                           id="category"
                           name="categoryname"
-                          class="form-control rounded-0 shadow shadow"
+                          class="form-control rounded-0 shadow"
                           type="text"
                           placeholder="Category Name"
                           required
@@ -40,6 +40,23 @@
                         <label for="category">Book Category Name</label>
                         <div class="invalid-feedback">
                           Category name is required
+                        </div>
+                      </div>
+                      <!-- FINE FIELD -->
+                      <div class="form-floating mb-3">
+                        <input
+                        id="fineamount",
+                        name="fineamount"
+                        class="form-control rounded-0 shadow"
+                        type="number"
+                        placeholder="Fine Amount"
+                        min="0"
+                        max="50"
+                        required
+                        />
+                        <label>Fine amount(per day)</label>
+                        <div class="invalid-feedback">
+                          Fine amount is within 0 to 50.
                         </div>
                       </div>
                     </div>
@@ -68,6 +85,7 @@
                       <tr>
                         <th scope="col">Sr No.</th>
                         <th scope="col">Books Category</th>
+                        <th scope="col">Fine Amount (per day)</th>
                         <th scope="col">Edit or Delete</th>
                       </tr>
                     </thead>
@@ -77,6 +95,7 @@
                         <tr id="" class="">
                           <th><%=i+1%>.</th>
                           <td><%=bookCategories[i].categoryname%></td>
+                          <td><%=bookCategories[i].fineamount%></td>
                           <td class="d-flex column-gap-1">
                             <form method="post" action="/book-category-edit">
                               <input type="hidden" name="id" value="<%=bookCategories[i]._id%>">

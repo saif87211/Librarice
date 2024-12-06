@@ -6,6 +6,11 @@ const bookCategorySchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    fineamount: {
+      type: Number,
+      default: 0,
+      required: true,
+    }
   },
   { timestamps: true }
 );

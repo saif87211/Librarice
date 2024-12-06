@@ -28,7 +28,7 @@
                 >
                   <div class="row g-3">
                     <div class="col-md">
-                      <!-- STUDENT NAME FIELD -->
+                      <!-- CATEGORY NAME FIELD -->
                       <div class="form-floating mb-3">
                         <input type="hidden" name="id" value="<%=bookCategory._id%>">
                         <input
@@ -45,6 +45,23 @@
                           Book Category is required
                         </div>
                       </div>
+                      <!-- FINE FIELD -->
+                      <div class="form-floating mb-3">
+                        <input
+                        id="fineamount",
+                        name="fineamount"
+                        class="form-control rounded-0 shadow"
+                        type="number"
+                        placeholder="Fine Amount"
+                        min="0"
+                        max="50"
+                        value="<%=bookCategory.fineamount%>"
+                        required
+                        />
+                        <label>Fine amount(per day)</label>
+                        <div class="invalid-feedback">
+                          Fine amount is within 0 to 50.
+                        </div>
                     </div>
                   </div>
                   <!-- SUBMIT BUTTON -->

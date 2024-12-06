@@ -55,9 +55,9 @@ const renderBookCategoryEdit = asyncHandler(async (req, res) => {
 //CREATE OR EDIT CATEGORY
 const createOrUpdateCategoy = asyncHandler(async (req, res) => {
   const { id, categoryname } = req.body;
-  const zodValidation = validateBookCategory({ categoryname });
-
-  const bookCategories = await BookCategory.find();
+  const fineamount = Number(req.body.fineamount);
+  
+  const zodValidation = validateBookCategory({ categoryname, fineamount });
   if (!zodValidation) {
     req.session.apiResponse = new ApiResponse(400, {
       alert: true,
@@ -68,9 +68,9 @@ const createOrUpdateCategoy = asyncHandler(async (req, res) => {
   }
 
   if (id) {
-    await BookCategory.findByIdAndUpdate(id, { categoryname });
+    await BookCategory.findByIdAndUpdate(id, { categoryname, fineamount });
   } else {
-    await BookCategory.create({ categoryname });
+    await BookCategory.create({ categoryname, fineamount });
   }
 
   req.session.apiResponse = new ApiResponse(200, {

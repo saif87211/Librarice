@@ -23,6 +23,7 @@ const studentSchema = z.object({
 
 const categorySchema = z.object({
   categoryname: z.string(),
+  fineamount: z.number().gte(0).lte(50),
 });
 
 const bookSchema = z.object({
