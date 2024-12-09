@@ -39,6 +39,7 @@ import sectionRoute from "./routes/section.routes.js";
 import studentRoute from "./routes/student.routes.js";
 import bookCategoryRoute from "./routes/bookcategory.routes.js";
 import bookRoute from "./routes/book.routes.js";
+import transactionRoute from "./routes/transaction.routes.js";
 
 app.use("/", userRoute);
 
@@ -47,5 +48,6 @@ app.use("/", sectionRoute);
 app.use("/", studentRoute);
 app.use("/", bookCategoryRoute);
 app.use("/", bookRoute);
+app.use("/", transactionRoute);
 
 export { app };

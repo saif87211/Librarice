@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Issue Books</title>
+    <%-include("./partials/styles")%>
+</head>
+<body>
+    <%-include("./partials/header",{page:"Issue Books"})%>
+    <% const sections = apiResponse.data.sections;  %>
+    <!-- MAIN BODY STARTS -->
+    <main class="split-background">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-8">
+            <div class="card bg-white rounded-0 shadow my-4">
+              <h5 class="card-header py-3">Add Book</h5>
+              <div class="card-body bg-secondary-subtle p-4">
+                <form id="issue-books-form" class="needs-validation" novalidate>
+                  <div class="row">
+                    <div class="col">
+                      <!-- SECTION SELECT FIELD -->
+                      <div class="row">
+                        <div class="col-md">
+                          <div class="form-floating mb-3">
+                            <select id="section-select" class="form-select rounded-0 shadow" name="section" required>
+                              <option selected disabled value="">
+                                Select student section
+                              </option>
+                              <% for(let i=0; i < sections.length; i++){%>
+                                <option value="<%=sections[i]._id%>">
+                                  <%=sections[i].name%>
+                                </option>
+                                <%}%>
+                            </select>
+                            <div class="invalid-feedback">
+                              Please select a book category.
+                            </div>
+                            <label for="class">Section</label>
+                          </div>
+                        </div>
+                      </div>
+                      <!-- STUDENT SELECT FIELD -->
+                      <div class="row">
+                        <div class="col-md">
+                          <div id="select-student" class="form-floating mb-3">
+                          </div>
+                        </div>
+                      </div>
+                      <!-- BOOK ID FIELD -->
+                      <div class="row">
+                        <div id="book-id-inputs" class="col">
+                          <!-- UNIQUE ID FIELD -->
+                          <div id="book-id" class="d-none form-floating mb-3">
+                            <input id="uniqueId" name="uniqueId" class="form-control rounded-0 shadow" type="uniqueId"
+                              placeholder="Book Id." required />
+                            <label for="rollno">Book Id</label>
+                            <div class="invalid-feedback">
+                              Book id is required.
+                            </div>
+                          </div>
+                        </div>
+                        <div calss="col">
+                          <div id="btn-group" class="d-none btn-group gap-1" role="group" aria-label="add-remove id field">
+                            <button id="add-field" type="button" class="btn btn-primary"><i class="bi bi-plus-lg"></i></button>
+                            <button id="remove-field" type="button" class="btn btn-primary"><i class="bi bi-dash-lg"></i></button>
+                          </div>
+                        </div>
+                      </div>
+                      <!-- SUBMIT BUTTON -->
+                      <div class="d-grid gap-2 mt-3">
+                        <button id="issue-submit" class="d-none btn btn-primary rounded-0" type="submit">
+                          Add Book
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <!-- MAIN BODY ENDS -->
+
+    <%-include("./partials/footer")%>
+    <!-- SWEET ALERT -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <% const {data} = apiResponse; %>
+    <% if(data.alert){%>
+      <template id="alert-template">
+        <swal-title><%=data.title%></swal-title>
+        <swal-html><p><%=data.message%></p></swal-html>
+        <swal-icon type="<%=(apiResponse.success)?'success':'error'%>"></swal-icon>
+        <swal-button type="confirm">Okay</swal-button>
+      </template>
+        <script>
+            Swal.fire({
+                template: "#alert-template"
+            });
+        </script>
+      <%}%>
+
+    <%-include("./partials/scripts")%>
+    <script src="../custom.js"></script>
+</body>
+</html>
