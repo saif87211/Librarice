@@ -46,11 +46,11 @@ const checkBookIssued = asyncHandler(async (req, res) => {
     const book = await Book.findOne({ uniqueId: bookUniqueId });
 
     if (!book) {
-        return res.status(400).json(new ApiResponse(400, { alert: true, title: "Can't find book.", message: "Book record dosen't exist" }));
+        return res.status(400).json(new ApiResponse(400, { alert: true, title: "uniqeid is not exist", message: "Book record dosen't exist" }));
     }
 
-    const message = book.isIssued ? "Book is already issued" : "Book is available";
-    return res.status(200).json(new ApiResponse(200, { alert: book.isIssued, message }));
+    const title = book.isIssued ? "Book is already issued" : "Book is available";
+    return res.status(200).json(new ApiResponse(200, { alert: book.isIssued, title }));
 });
 
 //BOOK-ISSUE
@@ -69,10 +69,27 @@ const issueBooks = asyncHandler(async (req, res) => {
     });
 
     if (books.length !== transaction.bookIds.length) {
-        const validBookIds = books.map(book => book.uniqueId);
-        const validateIds = transaction.bookIds.map(uniquIds => ({ uniquIds, isExist: validBookIds.includes(uniquIds) }));
-        return res.status(400).json(new ApiResponse(400, { alert: "true", validateIds }));
+        const invalidIds = [];
+        for (const id of transaction.bookIds) {
+            const book = books.find(book => book.uniqueId === id);
+            if (!book) {
+                invalidIds.push({
+                    uniqueId: id,
+                    message: "Thid is is not exist"
+                });
+                continue;
+            }
+            if (book.isIssued) {
+                invalidIds.push({
+                    uniqueId: id,
+                    message: "Book is already issued"
+                });
+            }
+        }
+
+        return res.status(400).json(new ApiResponse(400, { alert: true, invalidIds }));
     }
+
 
     //TODO: CREATE ENTRIES
     return res.send(books);

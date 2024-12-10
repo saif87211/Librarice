@@ -1,9 +1,6 @@
 $(
     $(document).ready(function () {
-        // $("#section-select").select2({
-        //     theme: 'bootstrap-5',
-        //     selectionCssClass:"form-select rounded-0 shadow"
-        // });
+        const bookIdfield = $("#book-id").clone().removeClass("d-none");
         $("#section-select").on("change", async function (e) {
             try {
                 const sectionId = $(this).val();
@@ -44,8 +41,9 @@ $(
             }
         });
         $("#add-field").on("click", function () {
-            const bookIdfield = $("#book-id").clone();
-            bookIdfield.children("input[name='uniqueId']").val("");
+            // const bookIdfield = $("#book-id").clone();
+            // bookIdfield.children("input[name='uniqueId']").val("");
+            console.log(bookIdfield);
             $("#book-id-inputs").append(bookIdfield);
         });
         $("#remove-field").on("click", function () {
@@ -54,31 +52,33 @@ $(
                 bookIdInputs.last().remove();
             }
         });
-        // $("#book-id-inputs").on("change", "input[name = 'uniqueId']", async function () {
-        //     try {
-        //         const uniqueId = $(this).val();
-        //         const response = await fetch("/check-book-issued", {
-        //             method: "POST",
-        //             body: JSON.stringify({ uniqueId }),
-        //             headers: new Headers({
-        //                 'Content-Type': 'application/json; charset=UTF-8'
-        //             })
-        //         });
-        //         const responseData = await response.json();
-        //         const data = responseData.data;
-        //         if (data.alert) {
-        //             //TODO: SHOW SOEMTHING LIKE READ BOX
-        //             alert("book is already issued");
-        //             console.log($(this));
-        //         }
-        //         else {
-        //             //TODO:SHOW SOMETHING
-        //         }
-        //     } catch (error) {
-        //         console.log(error);
-        //         //TODO:SHOW SOEMTHING WENT WRONG
-        //     }
-        // });
+        $("#book-id-inputs").on("change", "input[name = 'uniqueId']", async function () {
+            try {
+                const uniqueId = $(this).val();
+                const response = await fetch("/check-book-issued", {
+                    method: "POST",
+                    body: JSON.stringify({ uniqueId }),
+                    headers: new Headers({
+                        'Content-Type': 'application/json; charset=UTF-8'
+                    })
+                });
+                const responseData = await response.json();
+                const data = responseData.data;
+                if (data.alert) {
+                    //TODO: SHOW SOEMTHING LIKE READ BOX
+                    alert("book is already issued");
+                    console.log($(this));
+                    $(this).addClass("is-invalid");
+                    $(this).siblings(".invalid-feedback").text(data.title);
+                }
+                else {
+                    $(this).addClass("is-valid");
+                }
+            } catch (error) {
+                console.log(error);
+                //TODO:SHOW SOEMTHING WENT WRONG
+            }
+        });
 
         $("#issue-books-form").on("submit", async function (e) {
             e.preventDefault();
