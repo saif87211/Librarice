@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Issue Books</title>
-    <%-include("./partials/styles")%>
+    <%-include("../partials/styles")%>
 </head>
 <body>
-    <%-include("./partials/header",{page:"Issue Books"})%>
+    <%-include("../partials/header",{page:"Issue Books"})%>
     <% const sections = apiResponse.data.sections;  %>
     <!-- MAIN BODY STARTS -->
-    <main class="split-background">
+    <main class="split-background min-vh-80">
       <div class="container">
         <div class="row justify-content-center">
           <div class="col-lg-8">
@@ -85,7 +85,7 @@
     </main>
     <!-- MAIN BODY ENDS -->
 
-    <%-include("./partials/footer")%>
+    <%-include("../partials/footer")%>
     <!-- SWEET ALERT -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <% const {data} = apiResponse; %>
@@ -103,7 +103,7 @@
         </script>
       <%}%>
 
-    <%-include("./partials/scripts")%>
-    <script src="../custom.js"></script>
+    <%-include("../partials/scripts")%>
+    <script src="../main.js"></script>
 </body>
 </html>

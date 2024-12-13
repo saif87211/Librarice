@@ -48,6 +48,6 @@ app.use("/", sectionRoute);
 app.use("/", studentRoute);
 app.use("/", bookCategoryRoute);
 app.use("/", bookRoute);
-app.use("/", transactionRoute);
+app.use("/transaction", transactionRoute);
 
 export { app };

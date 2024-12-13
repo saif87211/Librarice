@@ -9,16 +9,15 @@ import { Transaction } from "../models/transaction.model.js";
 const renderBookIssuePage = asyncHandler(async (req, res) => {
     const sections = await Section.find();
 
-    const sortedSectiions = sections.sort((a, b) => a.name.localeCompare(b.name));
     let apiResponse;
     if (req.session.apiResponse) {
         apiResponse = JSON.parse(JSON.stringify(req.session.apiResponse));
         req.session.apiResponse = null;
     } else {
-        apiResponse = new ApiResponse(200, { alert: false, sections: sortedSectiions });
+        apiResponse = new ApiResponse(200, { alert: false, sections });
     }
 
-    return res.status(apiResponse.statuscode).render("issue-book", { apiResponse });
+    return res.status(apiResponse.statuscode).render("transaction/issue-book", { apiResponse });
 });
 
 //GET SECTION STUDNETS LIST
@@ -28,7 +27,7 @@ const getSectionStudents = asyncHandler(async (req, res) => {
         return res.status(400).json(new ApiResponse(400, { alert: true, title: "Can't find section id", message: "Try again" }));
     }
 
-    const students = await Student.find({ section: sectionId });
+    const students = await Student.find({ section: sectionId }).select({ name: 1 });
     if (!students) {
         return res.status(400).json(new ApiResponse(400, { alert: true, title: "Can't find student list", message: "Try again" }));
     }
@@ -55,44 +54,54 @@ const checkBookIssued = asyncHandler(async (req, res) => {
 
 //BOOK-ISSUE
 const issueBooks = asyncHandler(async (req, res) => {
-    console.log(req.body);
-    const transaction = { studentId: req.body.studentId };
-    const bookuniqIds = req.body.uniqueId;
-    transaction.bookIds = typeof (bookuniqIds) === "string" ? [bookuniqIds] : bookuniqIds;
+    const stuId = req.body.studentId;
+    const bookUniqueIds = typeof (req.body.uniqueId) === "string" ? [req.body.uniqueId] : req.body.uniqueId;
 
-    ///TODO: Zod validation
+    //zod validation
+
+    const student = await Student.findById(stuId);
+
+    if (!student) {
+        return res.status(400).json(new ApiResponse(400, { alert: "true", title: "Invalid student", message: "Try again after some time" }));
+    }
 
     const books = await Book.find({
         uniqueId: {
-            $in: transaction.bookIds
+            $in: bookUniqueIds
         }
-    });
-
-    if (books.length !== transaction.bookIds.length) {
-        const invalidIds = [];
-        for (const id of transaction.bookIds) {
-            const book = books.find(book => book.uniqueId === id);
-            if (!book) {
-                invalidIds.push({
-                    uniqueId: id,
-                    message: "Thid is is not exist"
-                });
-                continue;
-            }
-            if (book.isIssued) {
-                invalidIds.push({
-                    uniqueId: id,
-                    message: "Book is already issued"
-                });
-            }
+    }).select({ uniqueId: 1, isIssued: 1 });
+    
+    const invalidIds = [];
+    for (const bookId of bookUniqueIds) {
+        const book = books.find(b => b.uniqueId === bookId);
+        if (!book) {
+            invalidIds.push({
+                uniqueId: bookId,
+                message: "This id is not exist"
+            });
+            continue;
         }
-
-        return res.status(400).json(new ApiResponse(400, { alert: true, invalidIds }));
+        if (book.isIssued) {
+            invalidIds.push({
+                uniqueId: bookId,
+                message: "Book is already issued"
+            });
+        }
     }
+    if (invalidIds.length) {
+        return res.status(400).json(new ApiResponse(400, { alert: true, title: "Validation failed", invalidIds }));
+    }
+    books.forEach(async (book) => {
+        book.isIssued = true;
+        await book.save();
+    });
+    const bookIds = books.map(b => b._id);
 
+    const transaction = await Transaction.create({ stuId, bookIds });
 
-    //TODO: CREATE ENTRIES
-    return res.send(books);
+    if (!transaction) {
+        return res.status(404).json(new ApiResponse(404, { title: "Internval server error", message: "Try again after sometime." }));
+    }
+    return res.status(200).json(new ApiResponse(200, { alert: true, title: "Books issued successfully." }));
 });
-
 export { renderBookIssuePage, getSectionStudents, checkBookIssued, issueBooks };

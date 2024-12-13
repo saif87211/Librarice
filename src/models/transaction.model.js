@@ -5,7 +5,7 @@ const transactionSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Student"
     },
-    bookId: [{
+    bookIds: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Book"
     }],
