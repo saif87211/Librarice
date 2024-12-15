@@ -178,10 +178,32 @@ const loginUser = asyncHandler(async (req, res) => {
     .redirect("/dashboard");
 });
 
+const changeCurrentPassword = asyncHandler(async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
+
+  const user = await User.findById(req.user?._id);
+
+  const isPasswordIsCorrect = await user.isPasswordCorrect(oldPassword);
+
+  if (!isPasswordIsCorrect) {
+    req.session.apiResponse = new ApiResponse(400, {
+      alert: true,
+      title: "Invalid old password.",
+      message: "",
+    });
+  }
+
+  user.password = newPassword;
+  await user.save({ validateBeforeSave: true });
+
+  return res.redirect("/profile");
+});
+
 export {
   renderLogin,
   redirectToLogin,
   renderRegister,
   registerUser,
   loginUser,
+  changeCurrentPassword
 };
