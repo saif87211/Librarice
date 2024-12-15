@@ -1,11 +1,13 @@
+import { ObjectId } from 'mongodb';
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { Section } from "../models/section.model.js";
 import { Student } from "../models/student.model.js";
 import { Book } from "../models/book.model.js";
 import { Transaction } from "../models/transaction.model.js";
+import { validateIsseBook, validateReturnBook } from "../utils/validation.js"
 
-//REBDER 
+//RENDER 
 const renderBookIssuePage = asyncHandler(async (req, res) => {
     const sections = await Section.find();
 
@@ -20,7 +22,19 @@ const renderBookIssuePage = asyncHandler(async (req, res) => {
     return res.status(apiResponse.statuscode).render("transaction/issue-book", { apiResponse });
 });
 
-//GET SECTION STUDNETS LIST
+const renderReturnBookPage = asyncHandler(async (req, res) => {
+    const sections = await Section.find();
+    let apiResponse;
+    if (req.session.apiResponse) {
+        apiResponse = JSON.parse(JSON.stringify(req.session.apiResponse));
+        req.session.apiResponse = null;
+    } else {
+        apiResponse = new ApiResponse(200, { alert: false, sections });
+    }
+    return res.status(apiResponse.statuscode).render("transaction/return-book", { apiResponse });
+});
+
+//GET SECTION STUDENTS LIST
 const getSectionStudents = asyncHandler(async (req, res) => {
     const sectionId = req.body.sectionId;
     if (!sectionId) {
@@ -52,13 +66,20 @@ const checkBookIssued = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, { alert: book.isIssued, title }));
 });
 
-//BOOK-ISSUE
+//ISSUE-BOOKS
 const issueBooks = asyncHandler(async (req, res) => {
     const stuId = req.body.studentId;
     const bookUniqueIds = typeof (req.body.uniqueId) === "string" ? [req.body.uniqueId] : req.body.uniqueId;
 
     //zod validation
-
+    const zodValidation = validateIsseBook({ stuId, bookUniqueIds });
+    if (!zodValidation) {
+        return res.status(400).json(new ApiResponse(400, {
+            alert: true,
+            title: "Input data is invalid",
+            message: "Try again after some time",
+        }));
+    }
     const student = await Student.findById(stuId);
 
     if (!student) {
@@ -70,7 +91,7 @@ const issueBooks = asyncHandler(async (req, res) => {
             $in: bookUniqueIds
         }
     }).select({ uniqueId: 1, isIssued: 1 });
-    
+
     const invalidIds = [];
     for (const bookId of bookUniqueIds) {
         const book = books.find(b => b.uniqueId === bookId);
@@ -97,11 +118,195 @@ const issueBooks = asyncHandler(async (req, res) => {
     });
     const bookIds = books.map(b => b._id);
 
-    const transaction = await Transaction.create({ stuId, bookIds });
+    const transaction = await Transaction.create({ stuId, bookIds, issuedBy: req.user._id });
 
     if (!transaction) {
         return res.status(404).json(new ApiResponse(404, { title: "Internval server error", message: "Try again after sometime." }));
     }
     return res.status(200).json(new ApiResponse(200, { alert: true, title: "Books issued successfully." }));
 });
-export { renderBookIssuePage, getSectionStudents, checkBookIssued, issueBooks };
+
+//GET ISSUED BOOKS
+const getIssedBooks = asyncHandler(async (req, res) => {
+    const stuId = req.body.stuId;
+    if (!stuId) {
+        return res.status(404).json(new ApiResponse(404, { alert: true, title: "Invalid id", message: "Try agian after sometime." }));
+    }
+
+    const student = await Student.findById(stuId);
+    if (!student) {
+        return res.status(404).json(new ApiResponse(404, { alert: true, title: "Can't find Student", message: "Try again after sometime." }));
+    }
+
+    const transaction = await Transaction.aggregate([
+        {
+            '$match': {
+                'stuId': new ObjectId(student._id)
+            }
+        }, {
+            '$lookup': {
+                'from': 'books',
+                'localField': 'bookIds',
+                'foreignField': '_id',
+                'as': 'bookIds'
+            }
+        }, {
+            '$lookup': {
+                'from': 'users',
+                'localField': 'issuedBy',
+                'foreignField': '_id',
+                'as': 'issuedBy'
+            }
+        }, {
+            '$project': {
+                'bookIds': {
+                    'uniqueId': 1,
+                    'bookname': 1,
+                    'issuedBy': {
+                        'userId': {
+                            '$arrayElemAt': [
+                                '$issuedBy._id', 0
+                            ]
+                        },
+                        'fullname': {
+                            '$arrayElemAt': [
+                                '$issuedBy.fullname', 0
+                            ]
+                        }
+                    }
+                }
+            }
+        }, {
+            '$unwind': '$bookIds'
+        }, {
+            '$project': {
+                'uniqueId': '$bookIds.uniqueId',
+                'bookname': '$bookIds.bookname',
+                'issuedBy': '$bookIds.issuedBy'
+            }
+        }
+    ]);
+
+    if (!transaction) {
+        return res.status(404).json(new ApiResponse(500, { alert: true, title: "Something went wrong", message: "Try again after sometime." }));
+    }
+
+    return res.status(200).json(new ApiResponse(200, { alert: false, IssuedBooks: transaction }));
+});
+
+//RETURN BOOK
+const returnBook = asyncHandler(async (req, res) => {
+    const { stuId, issuedBy, uniqueId: removeBookId } = req.body;
+
+    //ZOD VALIDATION
+    const zodValidation = validateReturnBook({ stuId, issuedBy, removeBookId });
+    if (!zodValidation) {
+        return res.status(400).json(new ApiResponse(400, {
+            alert: true,
+            title: "Input data is invalid",
+            message: "Try again after some time",
+        }));
+    }
+    //SET BOOK .ISSUED TO FALSE
+    const book = await Book.findByIdAndUpdate(removeBookId, { isIssued: false }, { new: true });
+
+    if (!book) {
+        return res.status(500).json(new ApiResponse(500, { alert: true, title: "Internal server error", message: "Try again after sometime" }));
+    }
+    const transaction = await Transaction.findOneAndUpdate(
+        { stuId, issuedBy, bookIds: { $in: [book._id] } },
+        { $pull: { bookIds: removeBookId } },
+        { new: true }
+    );
+
+    if (!transaction || !transaction.bookIds.length) {
+        await Transaction.findByIdAndDelete(transaction._id);
+    }
+
+    return res.status(200).json(new ApiResponse(200, { alert: "true", title: "Book returned successfully" }));
+});
+
+//GET BOOKINFO
+const getBookInfo = asyncHandler(async (req, res) => {
+    const bookUniqueId = req.body.uniqueId;
+    console.log(bookUniqueId);
+    if (!bookUniqueId || bookUniqueId.trim() === "") {
+        return res.status(404).json(new ApiResponse(404, { alert: true, title: "Invalid id", message: "Try agian after sometime." }));
+    }
+
+    const book = await Book.find({ uniqueId: bookUniqueId }).select("-bookcategory");
+    console.log(book);
+    if (!book[0]) {
+        return res.status(500).json(new ApiResponse(500, { alert: true, title: "Can't find book.", message: "Try agian after sometime." }));
+    }
+
+    if (!book[0].isIssued) {
+        return res.status(200).json(new ApiResponse(200, { alert: true, book, title: "Book is not issued." }));
+    }
+
+    const issuedBook = await Transaction.aggregate([
+        {
+            '$match': {
+                'bookIds': {
+                    '$in': [
+                        new ObjectId(book[0]._id)
+                    ]
+                }
+            }
+        }, {
+            '$unwind': '$bookIds'
+        }, {
+            '$match': {
+                'bookIds': new ObjectId(book[0]._id)
+            }
+        }, {
+            '$lookup': {
+                'from': 'users',
+                'localField': 'issuedBy',
+                'foreignField': '_id',
+                'as': 'issuedBy'
+            }
+        }, {
+            '$lookup': {
+                'from': 'books',
+                'localField': 'bookIds',
+                'foreignField': '_id',
+                'as': 'bookIds'
+            }
+        }, {
+            '$lookup': {
+                'from': 'students',
+                'localField': 'stuId',
+                'foreignField': '_id',
+                'as': 'stuId'
+            }
+        }, {
+            '$project': {
+                'uniqueId': {
+                    '$arrayElemAt': [
+                        '$bookIds.uniqueId', 0
+                    ]
+                },
+                'bookname': {
+                    '$arrayElemAt': [
+                        '$bookIds.bookname', 0
+                    ]
+                },
+                'issuedBy': {
+                    '$arrayElemAt': [
+                        '$issuedBy.fullname', 0
+                    ]
+                },
+                'studentname': {
+                    '$arrayElemAt': [
+                        '$stuId.name', 0
+                    ]
+                },
+                'createdAt': 1
+            }
+        }
+    ]);
+    return res.status(200).json(new ApiResponse(200, { alert: false, issuedBook }));
+});
+
+export { renderBookIssuePage, getSectionStudents, checkBookIssued, issueBooks, renderReturnBookPage, getIssedBooks, returnBook, getBookInfo };

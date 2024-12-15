@@ -32,6 +32,18 @@ const bookSchema = z.object({
   bookcategory: z.string()
 });
 
+
+const issueBooksSchema = z.object({
+  stuId: z.string().length(24),
+  bookUniqueIds: z.array(z.string().length(24))
+});
+
+const returnBooksSchema = z.object({
+  stuId: z.string().length(24),
+  issuedBy: z.string().length(24),
+  removeBookId: z.string().length(24),
+});
+
 const validateRegisterUser = (userdata) => {
   const validation = userRegisterSchema.safeParse(userdata);
   return validation.success;
@@ -55,10 +67,22 @@ const validateBook = (bookData) => {
   const validation = bookSchema.safeParse(bookData);
   return validation.success;
 }
+
+const validateIsseBook = (issueBookData) => {
+  const validation = issueBooksSchema.safeParse(issueBookData);
+  return validation.success;
+}
+
+const validateReturnBook = (returnBookData) => { 
+  const validation = returnBooksSchema.safeParse(returnBookData);
+  return validation.success;
+}
 export {
   validateRegisterUser,
   validateLoginUser,
   validateStudent,
   validateBookCategory,
-  validateBook
+  validateBook,
+  validateIsseBook,
+  validateReturnBook
 };
