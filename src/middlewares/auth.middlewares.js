@@ -33,11 +33,11 @@ export const verifyJwt = asyncHandler(async (req, res, next) => {
     next();
   } catch (error) {
     console.log(error?.message);
-    const apiResponse = new ApiResponse(401, {
+    req.session.apiResponse = new ApiResponse(401, {
       alert: true,
       title: "Invalid access token",
       message: "Login again",
     });
-    return res.status(401).render("login", { apiResponse });
+    return res.redirect("/login");
   }
 });

@@ -96,7 +96,7 @@ $(
         //     }
         // });
 
-        //HANDLING FORM SUBMISSION
+        //HANDLING ISSUE-BOOK FORM SUBMISSION
         $("#issue-books-form").on("submit", async function (e) {
             e.preventDefault();
             if (this.checkValidity() === false) {
@@ -169,7 +169,10 @@ $(
                         icon: responseData.success ? "success" : "error"
                     });
 
-                    if (responseData.success) this.reset();
+                    if (responseData.success) {
+                        $("#book-id-inputs .form-floating:not(:first)").remove();
+                        this.reset();
+                    };
                 }
             } catch (error) {
                 console.log(error);
