@@ -2,17 +2,34 @@ $(
     $(document).ready(function () {
         const bookIdfield = $("#book-id").clone().removeClass("d-none");
         //STUDENT-SECTION
-        $("#section-select").on("change", async function (e) {
+
+        async function apiRequest(url, data) {
             try {
-                const sectionId = $(this).val();
-                const response = await fetch("/transaction/section-students", {
+                const response = await fetch(url, {
                     method: "POST",
-                    body: JSON.stringify({ sectionId }),
+                    body: JSON.stringify(data),
                     headers: new Headers({
                         'Content-Type': 'application/json; charset=UTF-8'
                     })
                 });
-                const serverData = await response.json();
+                return await response.json();
+            } catch (error) {
+                if (error) {
+                    Swal.fire({
+                        title: "Something went wrong while trying to connect with server",
+                        text: "Please refresh the page or try agian later.",
+                        icon: "error"
+                    });
+                }
+            }
+        }
+
+        //ADD STUDENT LIST
+        $("#section-select").on("change", async function (e) {
+            try {
+                const sectionId = $(this).val();
+
+                const serverData = await apiRequest("/transaction/section-students", { sectionId });
                 const students = serverData.data.students;
 
                 const selectElement = $("<select>").attr({
@@ -129,14 +146,7 @@ $(
                 jsonData[key] = data.length === 1 ? data[0] : data;
             }
             try {
-                const response = await fetch("/transaction/issue-book", {
-                    method: "POST",
-                    body: JSON.stringify(jsonData),
-                    headers: new Headers({
-                        'Content-Type': 'application/json; charset=UTF-8'
-                    })
-                });
-                const responseData = await response.json();
+                const responseData = await apiRequest("/transaction/issue-book", jsonData);
 
                 if (!responseData.success && responseData.data.invalidIds) {
                     const data = responseData.data;
@@ -182,6 +192,63 @@ $(
                     icon: "error"
                 });
             }
+        });
+
+        //GET STUDENT ISSED BOOK
+        $("#return-book-form").on("submit", async function (e) {
+            e.preventDefault();
+            const stuId = $("#student-select").val();
+
+            const responseData = await apiRequest("/transaction/get-issue-books", { stuId });
+            console.log(responseData);
+            //check for input scuccess or not
+            if (!responseData.success) {
+                Swal.fire({
+                    title: responseData.title,
+                    text: response.data?.message ? response.data?.message : "",
+                    icon: "error"
+                });
+            }
+            if (!responseData.data.issuedBooks.length) {
+                Swal.fire({
+                    title: "Student has not issued any books.",
+                    text: "",
+                    icon: "info"
+                });
+            }
+            const returnBookTable = $("#return-book-table").DataTable({
+                destroy: true,
+                data: responseData.data.issuedBooks,
+                columns: [
+                    { data: "uniqueId" },
+                    { data: "bookname" },
+                    { data: "issuedBy" },
+                    {
+                        data: null,
+                        render: function (data, type, row) {
+                            return "<button class='btn btn-sm btn-danger rounded-0 shadow-sm remove-row'>Return</button>";
+                        }
+                    },
+                ],
+            });
+
+            $("#table-content").removeClass("d-none");
+
+            //HANDLING RETURN BOOK
+            $('#return-book-table tbody').on('click', '.remove-row', async function () {
+                const rowData = returnBookTable.row($(this).parents('tr')).data();
+                console.log(rowData);
+
+                const response = await apiRequest("/transaction/return-book", { uniqueId: rowData.uniqueId });
+                if (response.success) {
+                    returnBookTable.row($(this).parents('tr')).remove().draw(false);
+                }
+                Swal.fire({
+                    title: response.data.title,
+                    text: response.data?.message ? response.data?.message : "",
+                    icon: response.success ? "success" : "error"
+                });
+            });
         });
     })
 );

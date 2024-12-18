@@ -35,7 +35,7 @@ const bookSchema = z.object({
 
 const issueBooksSchema = z.object({
   stuId: z.string().length(24),
-  bookUniqueIds: z.array(z.string().length(24))
+  bookUniqueIds: z.array(z.string())
 });
 
 const returnBooksSchema = z.object({

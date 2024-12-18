@@ -127,7 +127,7 @@ const issueBooks = asyncHandler(async (req, res) => {
 });
 
 //GET ISSUED BOOKS
-const getIssedBooks = asyncHandler(async (req, res) => {
+const getIssuedBooks = asyncHandler(async (req, res) => {
     const stuId = req.body.stuId;
     if (!stuId) {
         return res.status(404).json(new ApiResponse(404, { alert: true, title: "Invalid id", message: "Try agian after sometime." }));
@@ -182,7 +182,7 @@ const getIssedBooks = asyncHandler(async (req, res) => {
             '$project': {
                 'uniqueId': '$bookIds.uniqueId',
                 'bookname': '$bookIds.bookname',
-                'issuedBy': '$bookIds.issuedBy'
+                'issuedBy': '$bookIds.issuedBy.fullname'
             }
         }
     ]);
@@ -191,31 +191,25 @@ const getIssedBooks = asyncHandler(async (req, res) => {
         return res.status(404).json(new ApiResponse(500, { alert: true, title: "Something went wrong", message: "Try again after sometime." }));
     }
 
-    return res.status(200).json(new ApiResponse(200, { alert: false, IssuedBooks: transaction }));
+    return res.status(200).json(new ApiResponse(200, { alert: false, issuedBooks: transaction }));
 });
 
 //RETURN BOOK
 const returnBook = asyncHandler(async (req, res) => {
-    const { stuId, issuedBy, uniqueId: removeBookId } = req.body;
+    const removeBookId = req.body.uniqueId;
 
-    //ZOD VALIDATION
-    const zodValidation = validateReturnBook({ stuId, issuedBy, removeBookId });
-    if (!zodValidation) {
-        return res.status(400).json(new ApiResponse(400, {
-            alert: true,
-            title: "Input data is invalid",
-            message: "Try again after some time",
-        }));
+    if (!removeBookId || removeBookId.trim() === "") {
+        return res.status(404).json(new ApiResponse(404, { alert: true, title: "Invalid id", message: "Try agian after sometime." }));
     }
-    //SET BOOK .ISSUED TO FALSE
-    const book = await Book.findByIdAndUpdate(removeBookId, { isIssued: false }, { new: true });
+
+    const book = await Book.findOneAndUpdate({ uniqueId: removeBookId }, { isIssued: false }, { new: true });
 
     if (!book) {
         return res.status(500).json(new ApiResponse(500, { alert: true, title: "Internal server error", message: "Try again after sometime" }));
     }
     const transaction = await Transaction.findOneAndUpdate(
-        { stuId, issuedBy, bookIds: { $in: [book._id] } },
-        { $pull: { bookIds: removeBookId } },
+        { bookIds: { $in: [book._id] } },
+        { $pull: { bookIds: book._id } },
         { new: true }
     );
 
@@ -229,13 +223,13 @@ const returnBook = asyncHandler(async (req, res) => {
 //GET BOOKINFO
 const getBookInfo = asyncHandler(async (req, res) => {
     const bookUniqueId = req.body.uniqueId;
-    console.log(bookUniqueId);
+    
     if (!bookUniqueId || bookUniqueId.trim() === "") {
         return res.status(404).json(new ApiResponse(404, { alert: true, title: "Invalid id", message: "Try agian after sometime." }));
     }
 
     const book = await Book.find({ uniqueId: bookUniqueId }).select("-bookcategory");
-    console.log(book);
+    
     if (!book[0]) {
         return res.status(500).json(new ApiResponse(500, { alert: true, title: "Can't find book.", message: "Try agian after sometime." }));
     }
@@ -309,4 +303,4 @@ const getBookInfo = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, { alert: false, issuedBook }));
 });
 
-export { renderBookIssuePage, getSectionStudents, checkBookIssued, issueBooks, renderReturnBookPage, getIssedBooks, returnBook, getBookInfo };
+export { renderBookIssuePage, getSectionStudents, checkBookIssued, issueBooks, renderReturnBookPage, getIssuedBooks, returnBook, getBookInfo };
