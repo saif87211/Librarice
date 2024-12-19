@@ -34,6 +34,17 @@ const renderReturnBookPage = asyncHandler(async (req, res) => {
     return res.status(apiResponse.statuscode).render("transaction/return-book", { apiResponse });
 });
 
+const renderFindBookPage = asyncHandler(async (req, res) => {
+    let apiResponse;
+    if (req.session.apiResponse) {
+        apiResponse = JSON.parse(JSON.stringify(req.session.apiResponse));
+        req.session.apiResponse = null;
+    } else {
+        apiResponse = new ApiResponse(200, { alert: false });
+    }
+    return res.status(apiResponse.statuscode).render("transaction/find-book", { apiResponse });
+});
+
 //GET SECTION STUDENTS LIST
 const getSectionStudents = asyncHandler(async (req, res) => {
     const sectionId = req.body.sectionId;
@@ -223,15 +234,15 @@ const returnBook = asyncHandler(async (req, res) => {
 //GET BOOKINFO
 const getBookInfo = asyncHandler(async (req, res) => {
     const bookUniqueId = req.body.uniqueId;
-    
+
     if (!bookUniqueId || bookUniqueId.trim() === "") {
         return res.status(404).json(new ApiResponse(404, { alert: true, title: "Invalid id", message: "Try agian after sometime." }));
     }
 
     const book = await Book.find({ uniqueId: bookUniqueId }).select("-bookcategory");
-    
+
     if (!book[0]) {
-        return res.status(500).json(new ApiResponse(500, { alert: true, title: "Can't find book.", message: "Try agian after sometime." }));
+        return res.status(500).json(new ApiResponse(500, { alert: true, title: "Can't find book.", message: "Please check book uniqeId" }));
     }
 
     if (!book[0].isIssued) {
@@ -303,4 +314,4 @@ const getBookInfo = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, { alert: false, issuedBook }));
 });
 
-export { renderBookIssuePage, getSectionStudents, checkBookIssued, issueBooks, renderReturnBookPage, getIssuedBooks, returnBook, getBookInfo };
+export { renderBookIssuePage, getSectionStudents, checkBookIssued, issueBooks, renderReturnBookPage, getIssuedBooks, returnBook, getBookInfo, renderFindBookPage };

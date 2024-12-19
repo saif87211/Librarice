@@ -250,5 +250,35 @@ $(
                 });
             });
         });
+
+        $("#find-book-form").on("submit", async function (e) {
+            e.preventDefault();
+            if (this.checkValidity() === false) {
+                return;
+            }
+            const uniqueId = $("#find-book-form input").val();
+            const responseData = await apiRequest("/transaction/get-book-info", { uniqueId });
+
+            if (!responseData.success) {
+                Swal.fire({
+                    title: responseData.data.title,
+                    text: responseData.data.message,
+                    icon: "error"
+                });
+                const bookInfoTable = new DataTable('#book-info-table');
+                bookInfoTable.clear().draw();
+            }
+            $("#table-content").removeClass("d-none");
+            $("#book-info-table").DataTable({
+                destroy: true,
+                data: responseData.data.issuedBook,
+                columns: [
+                    { data: "uniqueId" },
+                    { data: "bookname" },
+                    { data: "studentname" },
+                    { data: "issuedBy" },
+                ],
+            });
+        });
     })
 );
