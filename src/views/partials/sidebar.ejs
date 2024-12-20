@@ -21,7 +21,7 @@
   <!-- SIDEBAR HEADER END -->
   <!-- SIDEBAR BODY START -->
   <div class="offcanvas-body p-0">
-    <div id="usermenu" class="accordion accordion-flush my-2">
+    <div id="dashboard-sidebar" class="accordion accordion-flush my-2">
       <!-- DASHBOARD -->
       <a
         href="/dashboard"
@@ -52,7 +52,7 @@
         <div
           id="usercollapse"
           class="accordion-collapse collapse"
-          data-bs-parent="#usermenu"
+          data-bs-parent="#dashboard-sidebar"
         >
           <div class="accordion-body p-0">
             <div class="list-group fs-6">
@@ -82,7 +82,8 @@
         <div
           id="bookcollapse"
           class="accordion-collapse collapse"
-          data-bs-parent="#usermenu"
+          data-bs-parent="#dashboard-sidebar"
+          data-bs-toggle="collapse"
         >
           <div class="accordion-body p-0">
             <div class="list-group fs-6">
@@ -98,27 +99,16 @@
           </div>
         </div>
       </div>
-      <!-- STUDETS -->
+      <!-- STUDENTS -->
       <div class="accordion-item border-bottom">
         <h2 class="accordion-header">
-          <button
-            class="accordion-button collapsed fw-bold shadow-none fs-5"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#studentcollapse"
-            aria-expanded="false"
-            aria-controls="studentcollapse"
-          >
+          <button class="accordion-button collapsed fw-bold shadow-none fs-5" type="button" data-bs-toggle="collapse" data-bs-target="#studentcollapse" aria-expanded="false" aria-controls="studentcollapse">
             <i class="bi bi-person-vcard"></i>
             <span class="ps-1">Students</span>
           </button>
         </h2>
 
-        <div
-          id="studentcollapse"
-          class="accordion-collapse collapse"
-          data-bs-parent="#usermenu"
-        >
+        <div id="studentcollapse" class="accordion-collapse collapse" data-bs-parent="#dashboard-sidebar">
           <div class="accordion-body p-0">
             <div class="list-group fs-6">
               <a href="/student" class="list-group-item hover-item">
@@ -133,6 +123,33 @@
           </div>
         </div>
       </div>
+
+      <!-- TRANSACTION -->
+      <div class="accordion-item my-5 border-top border-bottom">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed fw-bold shadow-none fs-5" type="button" data-bs-toggle="collapse" data-bs-target="#transactioncollapse" aria-expanded="false" aria-controls="transactioncollapse">
+            <i class="bi bi-arrow-left-right"></i>
+            <span class="ps-1">Book Transaction</span>
+          </button>
+        </h2>
+        <div id="transactioncollapse" class="accordion-collapse collapse" data-bs-parent="#dashboard-sidebar">
+          <div class="accordion-body p-0">
+            <div class="list-group fs-6">
+              <a href="/transaction/issue-book" class="list-group-item hover-item">
+                <i class="bi bi-box-arrow-left"></i>
+                <span>Issue books</span>
+              </a>
+              <a href="/transaction/retrun-book" class="list-group-item hover-item">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Return book</span>
+              </a>
+              <a href="/transaction/find-book" class="list-group-item hover-item">
+                <i class="bi bi-search"></i>
+                <span>Find Book</span>
+              </a>
+            </div>
+          </div>
+        </div>
     </div>
   </div>
   <!-- SIDEBAR BODY END -->
