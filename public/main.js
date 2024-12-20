@@ -251,6 +251,11 @@ $(
             });
         });
 
+        function clearTable() {
+            const bookInfoTable = new DataTable('#book-info-table');
+            bookInfoTable.clear().draw();
+        }
+        //FIND BOOK INFO
         $("#find-book-form").on("submit", async function (e) {
             e.preventDefault();
             if (this.checkValidity() === false) {
@@ -265,8 +270,15 @@ $(
                     text: responseData.data.message,
                     icon: "error"
                 });
-                const bookInfoTable = new DataTable('#book-info-table');
-                bookInfoTable.clear().draw();
+                clearTable();
+            }
+            if (!responseData.data.issuedBook && responseData.data.book) {
+                Swal.fire({
+                    title: responseData.data.title,
+                    text: `Bookname: ${responseData.data.book[0].bookname}`,
+                    icon: "info"
+                });
+                clearTable();
             }
             $("#table-content").removeClass("d-none");
             $("#book-info-table").DataTable({
