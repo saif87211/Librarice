@@ -24,6 +24,7 @@ const studentSchema = z.object({
 const categorySchema = z.object({
   categoryname: z.string(),
   fineamount: z.number().gte(0).lte(50),
+  daysafterfine: z.number().gte(0).lte(50),
 });
 
 const bookSchema = z.object({
@@ -73,7 +74,7 @@ const validateIsseBook = (issueBookData) => {
   return validation.success;
 }
 
-const validateReturnBook = (returnBookData) => { 
+const validateReturnBook = (returnBookData) => {
   const validation = returnBooksSchema.safeParse(returnBookData);
   return validation.success;
 }

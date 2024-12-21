@@ -6,6 +6,11 @@ const bookCategorySchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    daysafterfine: {
+      type: Number,
+      required: true,
+      default: 0
+    },
     fineamount: {
       type: Number,
       default: 0,

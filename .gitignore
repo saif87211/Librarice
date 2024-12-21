@@ -3,6 +3,8 @@
 
 ### Node ###
 test.ejs
+test.routes.js
+test.controller.js
 # Logs
 logs
 *.log

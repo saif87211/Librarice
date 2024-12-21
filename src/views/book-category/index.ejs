@@ -42,6 +42,24 @@
                           Category name is required
                         </div>
                       </div>
+                      <!-- DAYS AFTER FINE FIELD -->
+                      <div class="form-floating mb-3">
+                        <input
+                        id="daysafterfine",
+                        name="daysafterfine"
+                        class="form-control rounded-0 shadow"
+                        type="number"
+                        placeholder="Days After Fine"
+                        min="0",
+                        max="730"
+                        data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Enter 0 if no fine is applicable."
+                        required
+                        />
+                        <label>Days After Fine</label>
+                        <div class="invalid-feedback">
+                          Days After Fine is required
+                        </div>
+                      </div>
                       <!-- FINE FIELD -->
                       <div class="form-floating mb-3">
                         <input
@@ -54,7 +72,7 @@
                         max="50"
                         required
                         />
-                        <label>Fine amount(per day)</label>
+                        <label>Fine Amount</label>
                         <div class="invalid-feedback">
                           Fine amount is within 0 to 50.
                         </div>
@@ -79,13 +97,14 @@
                 <div class="card-body p-4">
                   <table
                     id="classTable"
-                    class="table table-bordered table-hover table-striped"
+                    class="table table-bordered table-hover table-striped table-responsive"
                     >
                     <thead>
                       <tr>
                         <th scope="col">Sr No.</th>
                         <th scope="col">Books Category</th>
-                        <th scope="col">Fine Amount (per day)</th>
+                        <th scope="col">Days After fine</th>
+                        <th scope="col">Fine Amount</th>
                         <th scope="col">Edit or Delete</th>
                       </tr>
                     </thead>
@@ -95,26 +114,29 @@
                         <tr id="" class="">
                           <th><%=i+1%>.</th>
                           <td><%=bookCategories[i].categoryname%></td>
-                          <td><%=bookCategories[i].fineamount%></td>
-                          <td class="d-flex column-gap-1">
-                            <form method="post" action="/book-category-edit">
-                              <input type="hidden" name="id" value="<%=bookCategories[i]._id%>">
-                              <button
-                                type="submit"
-                                class="btn btn-sm btn-primary rounded-circle"
-                              >
-                                <i class="bi bi-pencil"></i>
-                              </button>
-                            </form>
-                            <form class="delete-form" method="post" action="/book-category-delete">
-                              <input type="hidden" name="id" value="<%=bookCategories[i]._id%>">
-                              <button
-                                type="submit"
-                                class="btn btn-sm btn-danger rounded-circle"                                
+                          <td><%=bookCategories[i].daysafterfine ? bookCategories[i].daysafterfine : "No fine"%></td>
+                          <td><%=bookCategories[i].daysafterfine ? bookCategories[i].fineamount : "No fine"%></td>
+                          <td class="">
+                            <div class="btn-group btn-group-sm gap-1">
+                              <form method="post" action="/book-category-edit">
+                                <input type="hidden" name="id" value="<%=bookCategories[i]._id%>">
+                                <button
+                                  type="submit"
+                                  class="d-inline btn btn-sm btn-primary rounded-circle"
                                 >
-                                <i class="bi bi-trash"></i>
-                              </button>
-                          </form>
+                                  <i class="bi bi-pencil"></i>
+                                </button>
+                              </form>
+                              <form class="delete-form" method="post" action="/book-category-delete">
+                                <input type="hidden" name="id" value="<%=bookCategories[i]._id%>">
+                                <button
+                                  type="submit"
+                                  class="d-inline btn btn-sm btn-danger rounded-circle"                                
+                                  >
+                                  <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                            </div>
                           </td>
                         </tr>  
                       <%} %>

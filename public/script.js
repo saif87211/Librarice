@@ -103,5 +103,9 @@ $(
     if (window.history.replaceState) {
       window.history.replaceState(null, null, window.location.href);
     }
+
+    const tooltipTriggerList = $('[data-bs-toggle="tooltip"]')
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+
   })
 );

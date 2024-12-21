@@ -2,6 +2,7 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { BookCategory } from '../models/bookCategory.model.js';
 import { validateBookCategory } from '../utils/validation.js';
+import { ObjectId } from "mongodb";
 
 //RENDER CATEGORY
 const renderBookCategoy = asyncHandler(async (req, res) => {
@@ -56,8 +57,9 @@ const renderBookCategoryEdit = asyncHandler(async (req, res) => {
 const createOrUpdateCategoy = asyncHandler(async (req, res) => {
   const { id, categoryname } = req.body;
   const fineamount = Number(req.body.fineamount);
-  
-  const zodValidation = validateBookCategory({ categoryname, fineamount });
+  const daysafterfine = Number(req.body.daysafterfine);
+
+  const zodValidation = validateBookCategory({ categoryname, fineamount, daysafterfine });
   if (!zodValidation) {
     req.session.apiResponse = new ApiResponse(400, {
       alert: true,
@@ -68,9 +70,9 @@ const createOrUpdateCategoy = asyncHandler(async (req, res) => {
   }
 
   if (id) {
-    await BookCategory.findByIdAndUpdate(id, { categoryname, fineamount });
+    await BookCategory.findByIdAndUpdate(id, { categoryname, fineamount, daysafterfine });
   } else {
-    await BookCategory.create({ categoryname, fineamount });
+    await BookCategory.create({ categoryname, fineamount, daysafterfine });
   }
 
   req.session.apiResponse = new ApiResponse(200, {
@@ -87,14 +89,43 @@ const createOrUpdateCategoy = asyncHandler(async (req, res) => {
 const deleteBookCategory = asyncHandler(async (req, res) => {
   const id = req.body.id;
 
-  await BookCategory.findById(id).deleteOne();
+  const bookCategory = await BookCategory.aggregate([
+    {
+      $match: {
+        _id: ObjectId(id)
+      }
+    },
+    {
+      $lookup: {
+        from: "books",
+        localField: "_id",
+        foreignField: "bookcategory",
+        as: "result"
+      }
+    },
+    {
+      $project: {
+        count: {
+          $size: "$result"
+        }
+      }
+    }
+  ]);
 
-  const bookCategories = await BookCategory.find();
+  if (bookCategory[0].count) {
+    req.session.apiResponse = new ApiResponse(406, {
+      alert: true,
+      title: "Can't delete this book category.",
+      message: "This category already has students assigned to it"
+    });
+    return res.redirect("/book-category");
+  }
+
+  await BookCategory.findById(id).deleteOne();
 
   req.session.apiResponse = new ApiResponse(200, {
     alert: true,
     title: 'Category was deleted Succesfully',
-    bookCategories,
   });
   return res.redirect('/book-category');
 });

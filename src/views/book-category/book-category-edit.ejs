@@ -45,6 +45,24 @@
                           Book Category is required
                         </div>
                       </div>
+                      <!-- DAYS AFTER FINE FIELD -->
+                      <div class="form-floating mb-3">
+                        <input
+                        id="daysafterfine",
+                        name="daysafterfine"
+                        class="form-control rounded-0 shadow"
+                        type="number"
+                        placeholder="Days After Fine"
+                        min="0"
+                        value="<%=bookCategory.daysafterfine%>"
+                        data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Enter 0 if no fine is applicable."
+                        required
+                        />
+                        <label>Days After Fine</label>
+                        <div class="invalid-feedback">
+                          Days After Fine is required
+                        </div>
+                      </div>
                       <!-- FINE FIELD -->
                       <div class="form-floating mb-3">
                         <input
@@ -58,7 +76,7 @@
                         value="<%=bookCategory.fineamount%>"
                         required
                         />
-                        <label>Fine amount(per day)</label>
+                        <label>Fine Amount</label>
                         <div class="invalid-feedback">
                           Fine amount is within 0 to 50.
                         </div>
