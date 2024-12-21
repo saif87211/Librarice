@@ -1,10 +1,10 @@
 import { ObjectId } from 'mongodb';
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { Transaction } from "../models/Transaction.model.js";
 import { Section } from "../models/section.model.js";
 import { Student } from "../models/student.model.js";
 import { Book } from "../models/book.model.js";
-import { Transaction } from "../models/transaction.model.js";
 import { validateIsseBook, validateReturnBook } from "../utils/validation.js"
 
 //RENDER 

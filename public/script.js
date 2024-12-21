@@ -39,6 +39,7 @@ $(
     createDataTable("#myTable");
     createDataTable("#list");
     createDataTable("#classTable");
+    createDataTable("#recent-books-table");
 
     function createDataTable(tableId) {
       const dataTable = $(tableId);

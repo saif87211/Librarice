@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <%-include("../partials/styles")%>
+</head>
+<body>
+    <%-include("../partials/header",{page:"Profile"})%>
+    <!-- MAIN BODY STARTS -->
+    <main class="split-background">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 col-sm-12 my-5">
+                    <div class="row">
+                        <div class="col">
+                            <div class="card bg-white rounded-0 shadow my-4">
+                                <div class="card-header d-flex justify-content-between">
+                                    <h4>Profile</h4>
+                                    <button id="profileEditBtn" type="button" class="btn btn-primary rounded-0">Edit</button>
+                                </div>
+                                <div class="card-body">
+                                    <!-- PROFILE STARTS -->
+                                     <% const {username, fullname, email, _id } = apiResponse.data.user; %>
+                                    <form id="profileEditForm" action="/user/update-profile" method="post" class="needs-validation" novalidate>
+                                        <input type="hidden" name="_id" value="<%=_id%>">
+                                        <!-- USERNAME FIELD -->
+                                        <div class="form-floating mb-3">
+                                            <input id="username" name="username" class="form-control rounded-0 shadow" type="text" value="<%=username%>" disabled="" placeholder="Username" required />
+                                            <label for="username">Username</label>
+                                            <div class="invalid-feedback">Username is required.</div>
+                                        </div>
+                                        <!-- NAME FIELD -->
+                                        <div class="form-floating mb-3">
+                                            <input id="fullname" name="fullname" class="form-control rounded-0 shadow" type="text" value="<%=fullname%>" disabled="" placeholder="Fullanme" required />
+                                            <label for="fullname">Name</label>
+                                            <div class="invalid-feedback">Fullname is required.</div>
+                                        </div>
+                                        <!-- EMAIL FIELD -->
+                                        <div class="form-floating mb-3">
+                                            <input id="email" name="email" class="form-control rounded-0 shadow" type="email" value="<%=email%>" disabled="" placeholder="Email" required />
+                                            <label for="email">Email</label>
+                                            <div class="invalid-feedback">Email is required.</div>
+                                        </div>
+                                        <button id="updateProfile" type="submit" class="btn btn-primary rounded-0" disabled="">Submit</button>
+                                    </form>
+                                    <!-- PROFILE ENDS -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="card bg-white rounded-0 shadow my-4">
+                                <div class="card-header d-flex justify-content-between">
+                                    <h4 class="py-2">Change Password</h4>
+                                </div>
+                                <div class="card-body">
+                                    <form id="ChangePasswordForm" action="" method="post" class="needs-validation" novalidate>
+                                        <div class="form-floating mb-3">
+                                            <input id="oldPassword" name="oldPassword" type="password" class="form-control rounded-0 shadow" placeholder="Old password"
+                                                pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$" autocomplete="off" required />
+                                            <span><i id="toggler" class="bi bi-eye-fill"></i></span>
+                                            <label for="oldPassword">Old password</label>
+                                            <div class="invalid-feedback">
+                                                <ul>
+                                                    <p class="m-0">Pssword must be 8 character long. Contains</p>
+                                                    <li>1 special character</li>
+                                                    <li>1 Uppercase letter</li>
+                                                    <li>1 Lowercase letter</li>
+                                                    <li>1 number</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="form-floating mb-3">
+                                            <input id="newPassword" name="newPassword" type="password" class="form-control rounded-0 shadow" placeholder="new password"
+                                                pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$" autocomplete="off" required />
+                                            <span><i id="toggler" class="bi bi-eye-fill"></i></span>
+                                            <label for="newPassword">New password</label>
+                                            <div class="invalid-feedback">
+                                                <ul>
+                                                    <p class="m-0">Pssword must be 8 character long. Contains</p>
+                                                    <li>1 special character</li>
+                                                    <li>1 Uppercase letter</li>
+                                                    <li>1 Lowercase letter</li>
+                                                    <li>1 number</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <!-- SUBMIT BUTTON -->
+                                        <button id="submit-btn" class="btn btn-primary rounded-0 d-flex justify-content-center"
+                                            type="submit">Change Password</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-8 col-sm-12 my-5">
+                    <div class="card bg-white rounded-0 shadow my-4">
+                        <div class="card-header fs-4">
+                            Recent issued books
+                        </div>
+                       <div class="card-body">
+                        <%const recentIssedBooks  = apiResponse.data.recentIssedBooks%>
+                        <table id="recent-books-table" class="table table-striped">
+                            <thead>
+                                <tr>
+                                  <th>Sr No.</th>
+                                  <th>Unique Id</th>
+                                  <th>Book name</th>
+                                  <th>Book Category</th>
+                                  <th>Student Name</th>
+                                  <th>Isuued Date</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <% for(let i = 0; i < recentIssedBooks.length; i++){%>
+                                    <%const book =recentIssedBooks[i]; %>
+                                    <tr>
+                                        <th><%=i+1%></th>
+                                        <td><%=book.bookUniqeId%></td>
+                                        <td><%=book.book%></td>
+                                        <td><%=book.bookcategory%></td>
+                                        <td><%=book.student%></td>
+                                        <td><%=book.createdAt%></td>
+                                    </tr>
+                                <%}%>
+                              </tbody>
+                        </table>
+                       </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- MAIN BODY ENDS -->
+    <%-include("../partials/footer")%>
+    <!-- SWEET ALERT -->
+   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+   <% const {data} = apiResponse; %>
+   <% if(data.alert){%>
+     <template id="alert-template">
+       <swal-title><%=data.title%></swal-title>
+       <swal-html><p><%=data.message%></p></swal-html>
+       <swal-icon type="<%=(apiResponse.success)?'success':'error'%>"></swal-icon>
+       <swal-button type="confirm">Okay</swal-button>
+     </template>
+       <script>
+           Swal.fire({
+               template: "#alert-template"
+           });
+       </script>
+     <%}%>
+
+   <%-include("../partials/scripts")%>
+</body>
+</html>

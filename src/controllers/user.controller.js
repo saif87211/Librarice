@@ -1,12 +1,14 @@
 import jwt from "jsonwebtoken";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { User } from "../models/user.model.js";
+import { Transaction } from "../models/Transaction.model.js";
 import {
   validateRegisterUser,
   validateLoginUser,
 } from "../utils/validation.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { config } from "../config/config.js"
+import { ObjectId } from "mongodb";
 
 const cookieOptions = {
   httpOnly: true,
@@ -60,6 +62,85 @@ const renderLogin = asyncHandler(async (req, res) => {
     apiResponse = new ApiResponse(200, { alert: false });
   }
   return res.status(apiResponse.statuscode).render("login", { apiResponse });
+});
+
+const renderProfile = asyncHandler(async (req, res) => {
+
+  const recentIssuedBooks = await Transaction.aggregate([
+    {
+      '$match': {
+        'issuedBy': new ObjectId(req.user._id)
+      }
+    }, {
+      '$sort': {
+        'createdAt': 1
+      }
+    }, {
+      '$limit': 10
+    }, {
+      '$lookup': {
+        'from': 'students',
+        'localField': 'stuId',
+        'foreignField': '_id',
+        'as': 'student'
+      }
+    }, {
+      '$lookup': {
+        'from': 'books',
+        'localField': 'bookIds',
+        'foreignField': '_id',
+        'as': 'books',
+        'pipeline': [
+          {
+            '$lookup': {
+              'from': 'bookcategories',
+              'localField': 'bookcategory',
+              'foreignField': '_id',
+              'as': 'bookcategory'
+            }
+          }
+        ]
+      }
+    }, {
+      '$unwind': '$books'
+    }, {
+      '$project': {
+        'student': {
+          '$arrayElemAt': [
+            '$student.name', 0
+          ]
+        },
+        'bookUniqeId': '$books.uniqueId',
+        'book': '$books.bookname',
+        'bookcategory': {
+          '$arrayElemAt': [
+            '$books.bookcategory.categoryname', 0
+          ]
+        },
+        'createdAt': {
+          '$dateToString': {
+            'format': '%d-%m-%Y',
+            'date': '$createdAt'
+          }
+        }
+      }
+    }
+  ]);
+
+  let apiResponse;
+  if (req.session.apiResponse) {
+    apiResponse = JSON.parse(JSON.stringify(req.session.apiResponse));
+    req.session.apiResponse = null;
+  } else {
+    apiResponse = new ApiResponse(200, { alert: false });
+  }
+  const { username, fullname, email, _id } = req.user;
+
+  apiResponse.data.user = { username, fullname, email, _id };
+  apiResponse.data.recentIssedBooks = recentIssuedBooks;
+
+
+  return res.status(apiResponse.statuscode).render("user/profile", { apiResponse });
 });
 
 //REGISTER
@@ -199,11 +280,41 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
   return res.redirect("/profile");
 });
 
+const updateProfile = asyncHandler(async (req, res) => {
+  const { fullname, username, email, _id } = req.body;
+
+  //ZOD VALIDATION
+
+  const user = await User.findByIdAndUpdate(_id, { fullname, username, email }, { new: true }).select("-password");
+  if (!user) {
+    req.session.apiResponse = new ApiResponse(400, {
+      alert: true,
+      title: "Can't find the user",
+      message: "Try again after some time",
+    });
+    res.redirect("/user/profile");
+  }
+
+  req.session.apiResponse = new ApiResponse(200, {
+    alert: true,
+    title: "User profile updated succesfully",
+    message: "",
+  });
+  res.redirect("/user/profile");
+});
+
+const logout = asyncHandler(async (req, res) => {
+  return res.status(200).clearCookie("token", cookieOptions).redirect("/");
+});
+
 export {
   renderLogin,
   redirectToLogin,
   renderRegister,
   registerUser,
   loginUser,
-  changeCurrentPassword
+  changeCurrentPassword,
+  renderProfile,
+  updateProfile,
+  logout
 };
