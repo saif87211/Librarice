@@ -76,6 +76,36 @@ const createOrUpdateSection = asyncHandler(async (req, res) => {
 const deleteSection = asyncHandler(async (req, res) => {
   const id = req.body.id;
 
+  const section = await Section.aggregate([
+    {
+      '$match': {
+        '_id': new ObjectId(id)
+      }
+    }, {
+      '$lookup': {
+        'from': 'students',
+        'localField': '_id',
+        'foreignField': 'section',
+        'as': 'students'
+      }
+    }, {
+      '$project': {
+        'count': {
+          '$size': '$students'
+        }
+      }
+    }
+  ]);
+
+  if (section[0].count) {
+    req.session.apiResponse = new ApiResponse(406, {
+      alert: true,
+      title: "Can't delete this section.",
+      message: "This section already has students assigned to it"
+    });
+    return res.redirect("/book-category");
+  }
+
   await Section.findByIdAndDelete(id);
 
   req.session.apiResponse = new ApiResponse(200, {

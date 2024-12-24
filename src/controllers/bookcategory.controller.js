@@ -91,22 +91,20 @@ const deleteBookCategory = asyncHandler(async (req, res) => {
 
   const bookCategory = await BookCategory.aggregate([
     {
-      $match: {
-        _id: ObjectId(id)
+      '$match': {
+        '_id': new ObjectId(id)
       }
-    },
-    {
-      $lookup: {
-        from: "books",
-        localField: "_id",
-        foreignField: "bookcategory",
-        as: "result"
+    }, {
+      '$lookup': {
+        'from': 'books',
+        'localField': '_id',
+        'foreignField': 'bookcategory',
+        'as': 'books'
       }
-    },
-    {
-      $project: {
-        count: {
-          $size: "$result"
+    }, {
+      '$project': {
+        'count': {
+          '$size': '$books'
         }
       }
     }
@@ -116,7 +114,7 @@ const deleteBookCategory = asyncHandler(async (req, res) => {
     req.session.apiResponse = new ApiResponse(406, {
       alert: true,
       title: "Can't delete this book category.",
-      message: "This category already has students assigned to it"
+      message: "This category already has books assigned to it"
     });
     return res.redirect("/book-category");
   }
