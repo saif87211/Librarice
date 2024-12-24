@@ -77,25 +77,27 @@
                         <tr id="" class="">
                           <th><%=i+1%>.</th>
                           <td><%=sections[i].name%></td>
-                          <td class="d-flex column-gap-1">
-                            <form method="post" action="/section/section-edit">
-                              <input type="hidden" name="id" value="<%=sections[i]._id%>">
-                              <button
-                                type="submit"
-                                class="btn btn-sm btn-primary rounded-circle"
-                              >
-                                <i class="bi bi-pencil"></i>
-                              </button>
-                            </form>
-                            <form class="delete-form" method="post" action="/section-delete">
-                              <input type="hidden" name="id" value="<%=sections[i]._id%>">
-                              <button
-                                type="submit"
-                                class="btn btn-sm btn-danger rounded-circle"                                
+                          <td>
+                            <div class="d-flex column-gap-1">
+                              <form method="post" action="/section/section-edit">
+                                <input type="hidden" name="id" value="<%=sections[i]._id%>">
+                                <button
+                                  type="submit"
+                                  class="btn btn-sm btn-primary rounded-circle"
                                 >
-                                <i class="bi bi-trash"></i>
-                              </button>
-                          </form>
+                                  <i class="bi bi-pencil"></i>
+                                </button>
+                              </form>
+                              <form class="delete-form" method="post" action="/section-delete">
+                                  <input type="hidden" name="id" value="<%=sections[i]._id%>">
+                                  <button
+                                    type="submit"
+                                    class="btn btn-sm btn-danger rounded-circle"                                
+                                    >
+                                    <i class="bi bi-trash"></i>
+                                  </button>
+                              </form>
+                            </div>
                           </td>
                         </tr>  
                       <%} %>

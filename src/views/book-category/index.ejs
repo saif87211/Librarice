@@ -116,8 +116,8 @@
                           <td><%=bookCategories[i].categoryname%></td>
                           <td><%=bookCategories[i].daysafterfine ? bookCategories[i].daysafterfine : "No fine"%></td>
                           <td><%=bookCategories[i].daysafterfine ? bookCategories[i].fineamount : "No fine"%></td>
-                          <td class="">
-                            <div class="btn-group btn-group-sm gap-1">
+                          <td>
+                            <div class="d-flex column-gap-1">
                               <form method="post" action="/book-category-edit">
                                 <input type="hidden" name="id" value="<%=bookCategories[i]._id%>">
                                 <button

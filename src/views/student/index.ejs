@@ -160,7 +160,7 @@
                         <th scope="col">Medium</th>
                         <th scope="col">Std</th>
                         <th scope="col">Gender</th>
-                        <th scope="col">Edit</th>
+                        <th scope="col">Edit or Delete</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -172,25 +172,27 @@
                           <td><%=students[i].medium%></td>
                           <td><%=students[i].section.name%></td>
                           <td><%=students[i].gender%></td>
-                          <td class="d-flex column-gap-1">
-                            <form method="post" action="/student/student-edit">
-                              <input type="hidden" name="id" value="<%=students[i]._id%>">
-                              <button
-                                type="submit"
-                                class="btn btn-sm btn-primary rounded-circle"
-                              >
-                                <i class="bi bi-pencil"></i>
-                              </button>
-                            </form>
-                            <form class="delete-form" method="post" action="/student-delete">
-                              <input type="hidden" name="id" value="<%=students[i]._id%>">
-                              <button
-                                type="submit"
-                                class="btn btn-sm btn-danger rounded-circle"                                
+                          <td>
+                            <div class="d-flex column-gap-1">
+                              <form method="post" action="/student/student-edit">
+                                <input type="hidden" name="id" value="<%=students[i]._id%>">
+                                <button
+                                  type="submit"
+                                  class="btn btn-sm btn-primary rounded-circle"
                                 >
-                                <i class="bi bi-trash"></i>
-                              </button>
-                          </form>
+                                  <i class="bi bi-pencil"></i>
+                                </button>
+                              </form>
+                              <form class="delete-form" method="post" action="/student-delete">
+                                <input type="hidden" name="id" value="<%=students[i]._id%>">
+                                <button
+                                  type="submit"
+                                  class="btn btn-sm btn-danger rounded-circle"                                
+                                  >
+                                  <i class="bi bi-trash"></i>
+                                </button>
+                              </form>
+                            </div>
                           </td>
                         </tr>
                         <%}%>
