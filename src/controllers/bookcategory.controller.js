@@ -16,6 +16,7 @@ const renderBookCategoy = asyncHandler(async (req, res) => {
   } else {
     apiResponse = new ApiResponse(200, { alert: false, bookCategories });
   }
+  apiResponse.isAdmin = req.user.isAdmin;
   return res
     .status(apiResponse.statuscode)
     .render('book-category/', { apiResponse });
@@ -49,7 +50,7 @@ const renderBookCategoryEdit = asyncHandler(async (req, res) => {
     apiResponse: new ApiResponse(200, {
       alert: false,
       bookCategory,
-    }),
+    }, req.user.isAdmin),
   });
 });
 

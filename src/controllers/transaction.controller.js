@@ -18,7 +18,7 @@ const renderBookIssuePage = asyncHandler(async (req, res) => {
     } else {
         apiResponse = new ApiResponse(200, { alert: false, sections });
     }
-
+    apiResponse.isAdmin = req.user.isAdmin;
     return res.status(apiResponse.statuscode).render("transaction/issue-book", { apiResponse });
 });
 
@@ -31,6 +31,7 @@ const renderReturnBookPage = asyncHandler(async (req, res) => {
     } else {
         apiResponse = new ApiResponse(200, { alert: false, sections });
     }
+    apiResponse.isAdmin = req.user.isAdmin;
     return res.status(apiResponse.statuscode).render("transaction/return-book", { apiResponse });
 });
 
@@ -42,6 +43,7 @@ const renderFindBookPage = asyncHandler(async (req, res) => {
     } else {
         apiResponse = new ApiResponse(200, { alert: false });
     }
+    apiResponse.isAdmin = req.user.isAdmin;
     return res.status(apiResponse.statuscode).render("transaction/find-book", { apiResponse });
 });
 

@@ -191,6 +191,23 @@
 
     <%-include("./partials/footer")%>
     
+    <!-- SWEET ALERT -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <% const {data} = apiResponse; %>
+    <% if(data.alert){%>
+      <template id="alert-template">
+        <swal-title><%=data.title%></swal-title>
+        <swal-html><p><%=data.message%></p></swal-html>
+        <swal-icon type="<%=(apiResponse.success)?'success':'error'%>"></swal-icon>
+        <swal-button type="confirm">Okay</swal-button>
+      </template>
+        <script>
+            Swal.fire({
+                template: "#alert-template"
+            });
+        </script>
+      <%}%>
+
     <%-include("./partials/scripts")%>    
 </body>
 

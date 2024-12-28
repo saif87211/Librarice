@@ -217,6 +217,7 @@ $(
                 });
             }
             const returnBookTable = $("#return-book-table").DataTable({
+                responsive: true,
                 destroy: true,
                 data: responseData.data.issuedBooks,
                 columns: [
@@ -282,6 +283,7 @@ $(
             }
             $("#table-content").removeClass("d-none");
             $("#book-info-table").DataTable({
+                responsive: true,
                 destroy: true,
                 data: responseData.data.issuedBook,
                 columns: [

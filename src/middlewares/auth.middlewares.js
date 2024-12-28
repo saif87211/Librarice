@@ -21,14 +21,22 @@ export const verifyJwt = asyncHandler(async (req, res, next) => {
     const user = await User.findById(decodedToken?._id).select("-password");
 
     if (!user) {
-      const apiResponse = new ApiResponse(401, {
+      req.session.apiResponse = new ApiResponse(401, {
         alert: true,
         title: "Invalid access token",
         message: "Login again",
       });
-      return res.status(401).render("login", { apiResponse });
+      return res.redirect("/login");
     }
 
+    if (!user.isApproved) {
+      req.session.apiResponse = new ApiResponse(400, {
+        alert: true,
+        title: "Your registration request is not approved.",
+        message: "Contact your administrator.",
+      });
+      return res.redirect("/login");
+    }
     req.user = user;
     next();
   } catch (error) {

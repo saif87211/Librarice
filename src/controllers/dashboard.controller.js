@@ -6,8 +6,17 @@ import { Section } from "../models/section.model.js";
 import { BookCategory } from "../models/bookCategory.model.js";
 
 const renderDashboard = asyncHandler(async (req, res) => {
+  let apiResponse;
+  if (req.session.apiResponse) {
+    apiResponse = JSON.parse(JSON.stringify(req.session.apiResponse));
+    req.session.apiResponse = null;
+  } else {
+    apiResponse = new ApiResponse(200, { alert: false });
+  }
 
-  const dueData = await Transaction.aggregate([
+  apiResponse.isAdmin = req.user.isAdmin;
+
+  apiResponse.data.dueData = await Transaction.aggregate([
     {
       '$lookup': {
         'from': 'students',
@@ -193,7 +202,9 @@ const renderDashboard = asyncHandler(async (req, res) => {
 
   const totalStudents = sectionWiseStuCount.map(section => section.studentsCount).reduce((prev, next) => prev + next);
 
-  return res.status(200).render("dashboard", { apiResponse: new ApiResponse(200, { alert: false, dueData, categoryWiseBookCount, sectionWiseStuCount, totalBooks, totalStudents }) });
+  apiResponse.data = { ...apiResponse.data, categoryWiseBookCount, totalBooks, sectionWiseStuCount, totalStudents };
+
+  return res.status(apiResponse.statuscode).render("dashboard", { apiResponse });
 });
 
 export { renderDashboard };

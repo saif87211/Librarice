@@ -13,11 +13,13 @@ const renderStudentPage = asyncHandler(async (req, res) => {
   if (req.session.apiResponse) {
     apiResponse = req.session.apiResponse;
     req.session.apiResponse = null;
-    apiResponse.data.students = students;
-    apiResponse.data.sections = sections;
   } else {
-    apiResponse = new ApiResponse(200, { alert: false, students, sections });
+    apiResponse = new ApiResponse(200, { alert: false });
   }
+
+  apiResponse.data = { ...apiResponse.data, students, sections };
+
+  apiResponse.isAdmin = req.user.isAdmin;
   return res.status(apiResponse.statuscode).render("student", { apiResponse });
 });
 

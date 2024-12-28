@@ -18,7 +18,7 @@ const renderBookPage = asyncHandler(async (req, res) => {
     } else {
         apiResponse = new ApiResponse(200, { alert: false, books, bookCategories });
     }
-
+    apiResponse.isAdmin = req.user.isAdmin;
     return res.status(apiResponse.statuscode).render("book/", { apiResponse });
 });
 
@@ -47,7 +47,7 @@ const renderBookEdit = asyncHandler(async (req, res) => {
         });
         return res.redirect("book/");
     }
-
+    apiResponse.isAdmin = req.user.isAdmin;
     return res.status(200).render("book/book-edit", {
         apiResponse: new ApiResponse(200, {
             alert: false,

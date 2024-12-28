@@ -44,6 +44,7 @@ const renderRegister = asyncHandler(async (req, res) => {
   } else {
     apiResponse = new ApiResponse(200, { alert: false });
   }
+  apiResponse.isAdmin = req.user.isAdmin;
   return res.status(apiResponse.statuscode).render("register", { apiResponse });
 });
 
@@ -61,6 +62,7 @@ const renderLogin = asyncHandler(async (req, res) => {
   } else {
     apiResponse = new ApiResponse(200, { alert: false });
   }
+  apiResponse.isAdmin = req.user.isAdmin;
   return res.status(apiResponse.statuscode).render("login", { apiResponse });
 });
 
@@ -167,17 +169,22 @@ const renderProfile = asyncHandler(async (req, res) => {
 
 //RENDER USER MANAGE PAGE
 const renderMangeUsers = asyncHandler(async (req, res) => {
+
+  if (!req.user.isAdmin) {
+    req.session.apiResponse = new ApiResponse(403, {
+      alert: true,
+      title: "Not allowed",
+      message: "You don't have permission to access this page."
+    });
+    return res.redirect("/dashboard");
+  }
+
   let apiResponse;
   if (req.session.apiResponse) {
     apiResponse = JSON.parse(JSON.stringify(req.session.apiResponse));
     req.session.apiResponse = null;
   } else {
     apiResponse = new ApiResponse(200, { alert: false }, req.user.isAdmin);
-  }
-
-  if (!req.user.isAdmin) {
-    apiResponse.data = { alert: true, title: "Not allowed", message: "You don't have permission to acccess this page." };
-    return res.status(403).render("dashboard", { apiResponse });
   }
 
   const users = await User.aggregate([
@@ -211,7 +218,7 @@ const renderMangeUsers = asyncHandler(async (req, res) => {
   ]);
 
   apiResponse.data.users = users;
-  return res.status(200).render("./user/manage-users", { apiResponse });
+  return res.status(apiResponse.statuscode).render("./user/manage-users", { apiResponse });
 });
 
 //REGISTER
@@ -316,6 +323,7 @@ const loginUser = asyncHandler(async (req, res) => {
       title: "Your registration request is not approved.",
       message: "Contact your administrator.",
     });
+
     return res.redirect("/login");
   }
 
@@ -405,7 +413,7 @@ const changeRoleToAdmin = asyncHandler(async (req, res) => {
   if (!req.user.isAdmin) {
     req.session.apiResponse = new ApiResponse(403, {
       alert: true,
-      title: "Not allowed this actiont",
+      title: "Not allowed this action",
       message: "You don't have permission perform this action"
     });
     return res.redirect("/dashboard");
@@ -433,7 +441,7 @@ const changeRoleToUser = asyncHandler(async (req, res) => {
   if (!req.user.isAdmin) {
     req.session.apiResponse = new ApiResponse(403, {
       alert: true,
-      title: "Not allowed this actiont",
+      title: "Not allowed this action",
       message: "You don't have permission perform this action"
     });
     return res.redirect("/dashboard");
@@ -460,7 +468,7 @@ const approveNewUser = asyncHandler(async (req, res) => {
   if (!req.user.isAdmin) {
     req.session.apiResponse = new ApiResponse(403, {
       alert: true,
-      title: "Not allowed this actiont",
+      title: "Not allowed this action",
       message: "You don't have permission perform this action"
     });
     return res.redirect("/dashboard");
@@ -488,7 +496,7 @@ const deleteUser = asyncHandler(async (req, res) => {
   if (!req.user.isAdmin) {
     req.session.apiResponse = new ApiResponse(403, {
       alert: true,
-      title: "Not allowed this actiont",
+      title: "Not allowed this action",
       message: "You don't have permission perform this action"
     });
     return res.redirect("/dashboard");

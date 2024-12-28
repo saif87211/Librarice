@@ -14,6 +14,7 @@ const renderSection = asyncHandler(async (req, res) => {
   } else {
     apiResponse = new ApiResponse(200, { alert: false, sections });
   }
+  apiResponse.isAdmin = req.user.isAdmin;
   return res.status(apiResponse.statuscode).render('section/', { apiResponse });
 });
 
@@ -36,7 +37,7 @@ const renderSectionEdit = asyncHandler(async (req, res) => {
       alert: true,
       title: 'Invalid data',
       message: 'Try again after sometime',
-    });
+    }, req.user.isAdmin);
     return res.redirect('/section');
   }
   return res.status(200).render('section/section-edit', {
