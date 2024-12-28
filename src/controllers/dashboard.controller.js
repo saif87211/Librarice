@@ -16,7 +16,7 @@ const renderDashboard = asyncHandler(async (req, res) => {
 
   apiResponse.isAdmin = req.user.isAdmin;
 
-  apiResponse.data.dueData = await Transaction.aggregate([
+  const dueData = await Transaction.aggregate([
     {
       '$lookup': {
         'from': 'students',
@@ -94,7 +94,11 @@ const renderDashboard = asyncHandler(async (req, res) => {
           '$dateAdd': {
             'startDate': '$createdAt',
             'unit': 'day',
-            'amount': 1
+            'amount': {
+              '$arrayElemAt': [
+                '$book.bookcategory.daysafterfine', 0
+              ]
+            }
           }
         }
       }
@@ -202,7 +206,7 @@ const renderDashboard = asyncHandler(async (req, res) => {
 
   const totalStudents = sectionWiseStuCount.map(section => section.studentsCount).reduce((prev, next) => prev + next);
 
-  apiResponse.data = { ...apiResponse.data, categoryWiseBookCount, totalBooks, sectionWiseStuCount, totalStudents };
+  apiResponse.data = { ...apiResponse.data, dueData, categoryWiseBookCount, totalBooks, sectionWiseStuCount, totalStudents };
 
   return res.status(apiResponse.statuscode).render("dashboard", { apiResponse });
 });
