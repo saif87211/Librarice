@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Users</title>
+    <%-include("../partials/styles")%>
+</head>
+<body>
+    <%-include("../partials/header",{page:"Mange users"})%>
+
+    <% const {users} = apiResponse.data %>
+     <!-- MAIN BODY STARTS -->
+     <main class="split-background min-vh-80">
+        <div class="container">
+            <!-- TABLE START-->
+          <div class="row justify-content-center">
+            <div class="col">
+              <div class="card bg-white rounded-0 shadow my-4">
+                <h5 class="card-header py-3">Users</h5>
+                <div class="card-body px-4">
+                  <table id="list" class="table table-primary table-bordered">
+                    <thead>
+                      <tr>
+                        <th scope="col">Sr No.</th>
+                        <th scope="col">Full name</th>
+                        <th scope="col">Username</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Registerd Date</th>
+                        <th scope="col">Role</th>
+                        <th scope="col">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        <% for(let i=0; i< users.length; i++){ %>
+                            <tr>
+                                <th><%=i+1%></th>
+                                <td><%=users[i].fullname%></td>
+                                <td><%=users[i].username%></td>
+                                <td><%=users[i].email%></td>
+                                <td><%=users[i].registerdAt%></td>
+                                <td><%=users[i].isAdmin ? "Admin" : "User" %></td>
+                                <td>
+                                    <div class="d-flex gap-1">
+                                        <form method="post" action="<%=users[i].isAdmin ? '/user/change-role-user' : '/user/change-role-admin' %>">
+                                            <input type="hidden" name="id" value="<%=users[i]._id%>" />
+                                            <button class="btn btn-sm btn-success rounded-0" type="submit"><%=users[i].isAdmin ? "Down grade to user" : "Update to admin" %></button>
+                                        </form>
+                                        <form method="post" action="/user/delete-user">
+                                            <input type="hidden" name="id" value="<%=users[i]._id%>" />
+                                            <button class="btn btn-sm btn-danger rounded-0" type="submit">Delete user</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        <%}%>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- TABLE END -->
+        </div>
+    </main>
+    <!-- MAIN BODY ENDS -->
+    <%-include("../partials/footer")%>
+    <!-- SWEET ALERT -->
+   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+   <% const {data} = apiResponse; %>
+   <% if(data.alert){%>
+     <template id="alert-template">
+       <swal-title><%=data.title%></swal-title>
+       <swal-html><p><%=data.message%></p></swal-html>
+       <swal-icon type="<%=(apiResponse.success)?'success':'error'%>"></swal-icon>
+       <swal-button type="confirm">Okay</swal-button>
+     </template>
+       <script>
+           Swal.fire({
+               template: "#alert-template"
+           });
+       </script>
+     <%}%>
+
+   <%-include("../partials/scripts")%>
+</body>
+</html>

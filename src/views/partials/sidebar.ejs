@@ -33,7 +33,40 @@
         </div>
         <i class="bi bi-chevron-right fs-5"></i>
       </a>
-      
+      <%if(apiResponse.isAdmin){%>
+      <!-- USERS -->
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button
+            class="accordion-button collapsed fw-bold shadow-none fs-5"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#userscollapse"
+            aria-expanded="false"
+            aria-controls="userscollapse"
+          >
+            <i class="bi bi-people"></i>
+            <span class="ps-1">Users</span>
+          </button>
+        </h2>
+
+        <div
+          id="userscollapse"
+          class="accordion-collapse collapse"
+          data-bs-parent="#dashboard-sidebar"
+          data-bs-toggle="collapse"
+        >
+          <div class="accordion-body p-0">
+            <div class="list-group fs-6">
+              <a href="/user/manage-users" class="list-group-item hover-item">
+                <i class="bi bi-person-gear"></i>
+                <span>Manage user</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <%}%>
       <!-- BOOKS -->
       <div class="accordion-item">
         <h2 class="accordion-header">

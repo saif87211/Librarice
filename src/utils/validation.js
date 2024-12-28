@@ -5,7 +5,6 @@ const userRegisterSchema = z.object({
   username: z.string().trim().toLowerCase().min(3).max(20),
   email: z.string().email(),
   password: z.string().min(8),
-  isAdmin: z.boolean(),
 });
 
 const userLoginSchema = z.object({

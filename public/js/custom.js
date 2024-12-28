@@ -40,6 +40,7 @@ $(
     createDataTable("#list");
     createDataTable("#classTable");
     createDataTable("#recent-books-table");
+    createDataTable("#register-user-table");
 
     function createDataTable(tableId) {
       const dataTable = $(tableId);

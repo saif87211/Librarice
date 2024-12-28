@@ -8,6 +8,9 @@
 </head>
 <body>
     <%-include("../partials/header",{page:"Profile"})%>
+    <% const {username, fullname, email, _id } = apiResponse.data.user; %>
+    <% const { pendingUsers, recentIssedBooks } = apiResponse.data; %>
+    <% const isAdmin = apiResponse.isAdmin; %>
     <!-- MAIN BODY STARTS -->
     <main class="split-background">
         <div class="container">
@@ -22,7 +25,6 @@
                                 </div>
                                 <div class="card-body">
                                     <!-- PROFILE STARTS -->
-                                     <% const {username, fullname, email, _id } = apiResponse.data.user; %>
                                     <form id="profileEditForm" action="/user/update-profile" method="post" class="needs-validation" novalidate>
                                         <input type="hidden" name="_id" value="<%=_id%>">
                                         <!-- USERNAME FIELD -->
@@ -98,38 +100,91 @@
                     </div>
                 </div>
                 <div class="col-md-8 col-sm-12 my-5">
-                    <div class="card bg-white rounded-0 shadow my-4">
-                        <div class="card-header fs-4">
-                            Recent issued books
+                    <%if(isAdmin){%>
+                    <div class="row">
+                        <div class="col">
+                            <div class="card bg-white rounded-0 shadow my-4">
+                                <div class="card-header fs-4">
+                                    New user's registration request
+                                </div>
+                                <div class="card-body">
+                                    <%if(pendingUsers.length){%>
+                                    <table id="register-user-table" class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Full name</th>
+                                                <th>Username</th>
+                                                <th>Email</th>
+                                                <th>Registered date</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <%pendingUsers.forEach((user)=>{%>
+                                            <tr>
+                                                <td><%=user.fullname%></td>
+                                                <td><%=user.username%></td>
+                                                <td><%=user.email%></td>
+                                                <td><%=user.createdAt%></td>
+                                                <td>
+                                                    <div class="d-flex gap-1">
+                                                        <form method="post" action="/user/approve-new-user">
+                                                            <input type="hidden" name="id" value="<%=user._id%>" />
+                                                            <button class="btn btn-sm btn-success" type="submit">Approved</button>
+                                                        </form>
+                                                        <form method="post" action="/user/delete-user">
+                                                            <input type="hidden" name="id" value="<%=user._id%>" />
+                                                            <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+                                                        </form>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <%});%>
+                                        </tbody>
+                                    </table>
+                                    <%} else {%>
+                                    <p class="text-center">No pendig request.</p>
+                                    <%}%>
+                                </div>
+                            </div>
                         </div>
-                       <div class="card-body">
-                        <%const recentIssedBooks  = apiResponse.data.recentIssedBooks%>
-                        <table id="recent-books-table" class="table table-striped">
-                            <thead>
-                                <tr>
-                                  <th>Sr No.</th>
-                                  <th>Unique Id</th>
-                                  <th>Book name</th>
-                                  <th>Book Category</th>
-                                  <th>Student Name</th>
-                                  <th>Isuued Date</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <% for(let i = 0; i < recentIssedBooks.length; i++){%>
-                                    <%const book =recentIssedBooks[i]; %>
-                                    <tr>
-                                        <th><%=i+1%></th>
-                                        <td><%=book.bookUniqeId%></td>
-                                        <td><%=book.book%></td>
-                                        <td><%=book.bookcategory%></td>
-                                        <td><%=book.student%></td>
-                                        <td><%=book.createdAt%></td>
-                                    </tr>
-                                <%}%>
-                              </tbody>
-                        </table>
-                       </div>
+                    </div>
+                    <%}%>
+                    <div class="row">
+                        <div class="col">
+                            <div class="card bg-white rounded-0 shadow my-4">
+                                <div class="card-header fs-4">
+                                    Recent issued books
+                                </div>
+                               <div class="card-body">
+                                <table id="recent-books-table" class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                          <th>Sr No.</th>
+                                          <th>Unique Id</th>
+                                          <th>Book name</th>
+                                          <th>Book Category</th>
+                                          <th>Student Name</th>
+                                          <th>Isuued Date</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        <% for(let i = 0; i < recentIssedBooks.length; i++){%>
+                                            <%const book =recentIssedBooks[i]; %>
+                                            <tr>
+                                                <th><%=i+1%></th>
+                                                <td><%=book.bookUniqeId%></td>
+                                                <td><%=book.book%></td>
+                                                <td><%=book.bookcategory%></td>
+                                                <td><%=book.student%></td>
+                                                <td><%=book.createdAt%></td>
+                                            </tr>
+                                        <%}%>
+                                      </tbody>
+                                </table>
+                               </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
