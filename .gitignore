@@ -3,6 +3,7 @@
 
 ### Node ###
 test.ejs
+*.pem
 test.routes.js
 test.controller.js
 # Logs
