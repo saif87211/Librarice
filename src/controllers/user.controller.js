@@ -44,7 +44,6 @@ const renderRegister = asyncHandler(async (req, res) => {
   } else {
     apiResponse = new ApiResponse(200, { alert: false });
   }
-  apiResponse.isAdmin = req.user.isAdmin;
   return res.status(apiResponse.statuscode).render("register", { apiResponse });
 });
 
@@ -62,7 +61,6 @@ const renderLogin = asyncHandler(async (req, res) => {
   } else {
     apiResponse = new ApiResponse(200, { alert: false });
   }
-  apiResponse.isAdmin = req.user.isAdmin;
   return res.status(apiResponse.statuscode).render("login", { apiResponse });
 });
 
