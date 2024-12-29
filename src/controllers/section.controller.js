@@ -1,6 +1,7 @@
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { Section } from '../models/section.model.js';
+import { ObjectId } from 'mongodb';
 
 //RENDER SECTION
 const renderSection = asyncHandler(async (req, res) => {
