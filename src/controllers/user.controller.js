@@ -12,7 +12,7 @@ import { ObjectId } from "mongodb";
 
 const cookieOptions = {
   httpOnly: true,
-  secure: true,
+  //secure: true, //uncomment this if you are using secure server 
 };
 
 const generateToken = async (userId) => {

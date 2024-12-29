@@ -2,8 +2,6 @@ import { config } from "./config/config.js";
 import { app } from "./app.js";
 import dbConnect from "./db/db.js";
 
-
-
 const port = config.port || 3000;
 
 dbConnect()
@@ -13,7 +11,7 @@ dbConnect()
       throw error;
     });
     app.listen(port, () =>
-      console.log(`⚙ Server is hot on http://localhost:${port}`)
+      console.log(`⚙ Server is hot on ${port}`)
     );
   })
   .catch((err) => {
