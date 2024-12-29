@@ -3,6 +3,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { Student } from "../models/student.model.js";
 import { validateStudent } from "../utils/validation.js";
 import { Section } from "../models/section.model.js";
+import { Transaction } from "../models/Transaction.model.js";
 
 //RENDER STUDENT
 const renderStudentPage = asyncHandler(async (req, res) => {
@@ -117,6 +118,16 @@ const createOrUpdateStudent = asyncHandler(async (req, res) => {
 const deleteStudent = asyncHandler(async (req, res) => {
   const id = req.body.id;
 
+  const transaction = await Transaction.find({ stuId: id });
+
+  if (transaction.length) {
+    req.session.apiResponse = new ApiResponse(409, {
+      alert: true,
+      title: "Can't delete this student entry.",
+      message: "This student has issued some books"
+    });
+    return res.redirect("/student");
+  }
   await Student.findById(id).deleteOne();
 
   req.session.apiResponse = new ApiResponse(200, {

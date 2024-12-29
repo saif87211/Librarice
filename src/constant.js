@@ -1,1 +1,1 @@
-export const DB_NAME ="LibrarIce"
+export const DB_NAME ="Librarice"

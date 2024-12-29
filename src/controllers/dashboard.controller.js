@@ -184,7 +184,7 @@ const renderDashboard = asyncHandler(async (req, res) => {
     }
   ]);
 
-  const totalBooks = categoryWiseBookCount.map(category => category.booksCount).reduce((prev, next) => prev + next);
+  const totalBooks = categoryWiseBookCount.length ? categoryWiseBookCount.map(category => category.booksCount).reduce((prev, next) => prev + next) : 0;
 
   const sectionWiseStuCount = await Section.aggregate([
     {
@@ -204,7 +204,7 @@ const renderDashboard = asyncHandler(async (req, res) => {
     }
   ]);
 
-  const totalStudents = sectionWiseStuCount.map(section => section.studentsCount).reduce((prev, next) => prev + next);
+  const totalStudents = sectionWiseStuCount.length ? sectionWiseStuCount.map(section => section.studentsCount).reduce((prev, next) => prev + next) : 0;
 
   apiResponse.data = { ...apiResponse.data, dueData, categoryWiseBookCount, totalBooks, sectionWiseStuCount, totalStudents };
 

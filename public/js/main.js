@@ -200,7 +200,7 @@ $(
             const stuId = $("#student-select").val();
 
             const responseData = await apiRequest("/transaction/get-issue-books", { stuId });
-            console.log(responseData);
+
             //check for input scuccess or not
             if (!responseData.success) {
                 Swal.fire({
@@ -209,47 +209,48 @@ $(
                     icon: "error"
                 });
             }
-            if (!responseData.data.issuedBooks.length) {
+            else if (!responseData.data.issuedBooks.length) {
                 Swal.fire({
                     title: "Student has not issued any books.",
                     text: "",
                     icon: "info"
                 });
             }
-            const returnBookTable = $("#return-book-table").DataTable({
-                responsive: true,
-                destroy: true,
-                data: responseData.data.issuedBooks,
-                columns: [
-                    { data: "uniqueId" },
-                    { data: "bookname" },
-                    { data: "issuedBy" },
-                    {
-                        data: null,
-                        render: function (data, type, row) {
-                            return "<button class='btn btn-sm btn-danger rounded-0 shadow-sm remove-row'>Return</button>";
-                        }
-                    },
-                ],
-            });
-
-            $("#table-content").removeClass("d-none");
-
-            //HANDLING RETURN BOOK
-            $('#return-book-table tbody').on('click', '.remove-row', async function () {
-                const rowData = returnBookTable.row($(this).parents('tr')).data();
-                console.log(rowData);
-
-                const response = await apiRequest("/transaction/return-book", { uniqueId: rowData.uniqueId });
-                if (response.success) {
-                    returnBookTable.row($(this).parents('tr')).remove().draw(false);
-                }
-                Swal.fire({
-                    title: response.data.title,
-                    text: response.data?.message ? response.data?.message : "",
-                    icon: response.success ? "success" : "error"
+            else {
+                const returnBookTable = $("#return-book-table").DataTable({
+                    responsive: true,
+                    destroy: true,
+                    data: responseData.data.issuedBooks,
+                    columns: [
+                        { data: "uniqueId" },
+                        { data: "bookname" },
+                        { data: "issuedBy" },
+                        {
+                            data: null,
+                            render: function (data, type, row) {
+                                return "<button class='btn btn-sm btn-danger rounded-0 shadow-sm remove-row'>Return</button>";
+                            }
+                        },
+                    ],
                 });
-            });
+
+                $("#table-content").removeClass("d-none");
+
+                //HANDLING RETURN BOOK
+                $('#return-book-table tbody').on('click', '.remove-row', async function () {
+                    const rowData = returnBookTable.row($(this).parents('tr')).data();
+
+                    const response = await apiRequest("/transaction/return-book", { uniqueId: rowData.uniqueId });
+                    if (response.success) {
+                        returnBookTable.row($(this).parents('tr')).remove().draw(false);
+                    }
+                    Swal.fire({
+                        title: response.data.title,
+                        text: response.data?.message ? response.data?.message : "",
+                        icon: response.success ? "success" : "error"
+                    });
+                });
+            }
         });
 
         function clearTable() {
@@ -266,6 +267,7 @@ $(
             const responseData = await apiRequest("/transaction/get-book-info", { uniqueId });
 
             if (!responseData.success) {
+                $("table-content").hide();
                 Swal.fire({
                     title: responseData.data.title,
                     text: responseData.data.message,
@@ -273,7 +275,8 @@ $(
                 });
                 clearTable();
             }
-            if (!responseData.data.issuedBook && responseData.data.book) {
+            else if (!responseData.data.issuedBook && responseData.data.book) {
+                $("table-content").hide();
                 Swal.fire({
                     title: responseData.data.title,
                     text: `Bookname: ${responseData.data.book[0].bookname}`,
@@ -281,18 +284,21 @@ $(
                 });
                 clearTable();
             }
-            $("#table-content").removeClass("d-none");
-            $("#book-info-table").DataTable({
-                responsive: true,
-                destroy: true,
-                data: responseData.data.issuedBook,
-                columns: [
-                    { data: "uniqueId" },
-                    { data: "bookname" },
-                    { data: "studentname" },
-                    { data: "issuedBy" },
-                ],
-            });
+            else {
+                $("#table-content").removeClass("d-none");
+                $("table-content").show();
+                $("#book-info-table").DataTable({
+                    responsive: true,
+                    destroy: true,
+                    data: responseData.data.issuedBook,
+                    columns: [
+                        { data: "uniqueId" },
+                        { data: "bookname" },
+                        { data: "studentname" },
+                        { data: "issuedBy" },
+                    ],
+                });
+            }
         });
     })
 );

@@ -3,6 +3,8 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { Book } from "../models/book.model.js";
 import { BookCategory } from "../models/bookCategory.model.js"
 import { validateBook } from "../utils/validation.js";
+import { Transaction } from "../models/Transaction.model.js";
+import { ObjectId } from 'mongodb';
 
 //RENDER BOOK
 const renderBookPage = asyncHandler(async (req, res) => {
@@ -102,6 +104,18 @@ const createOrUpdateBook = asyncHandler(async (req, res) => {
 //DELETE
 const deleteBook = asyncHandler(async (req, res) => {
     const id = req.body.id;
+
+    const transaction = await Transaction.find({ bookIds: { $in: [new ObjectId(id)] } });
+
+    console.log(transaction);
+    if (transaction.length) {
+        req.session.apiResponse = new ApiResponse(409, {
+            alert: true,
+            title: "Can't delete this book.",
+            message: "This book is already issued with student."
+        });
+        return res.redirect("/book");
+    }
 
     await Book.findByIdAndDelete(id);
 
